@@ -1,0 +1,4 @@
+.completed {
+    text-decoration: line-through;
+    color: #999; /* 可选：添加灰色使完成项更明显 */
+}
