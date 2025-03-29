@@ -10,10 +10,9 @@
     <div>
         <h1>今日TODO</h1>
         <label for="">
-            <input type="checkbox" class="c1 checkbox" id="c1">1.算法两道题,不会就抄,动脑子的抄<br>
-            <input type="checkbox" class="c2 checkbox">2.看面试题2道<br>
-            <input type="checkbox" class="c3 checkbox">3.确保睡够9h<br>
-            <input type="checkbox" class="c5 checkbox">5.完成5全部<br>
+            <ul>
+                <li>JAVA 阶段6</li>
+            </ul>
         </label>
 
         <a href="./index.html">index.html</a>
@@ -23,7 +22,15 @@
         <h1>今日时间规划</h1>
         <h5>行为记录</h5>
 
-        行为&nbsp;&nbsp;&nbsp;<input type="text" value="" placeholder="     输入你做了什么?" size="16">
+        <div>
+            <label for="value" id="behavior">
+                <button value="数学" onclick="getVal(this)">数学</button>
+                <button value="科技" onclick="getVal(this)">科技</button>
+                <button value="I&E" onclick="getVal(this)">I&E</button>
+                <button value="Sub" onclick="getVal(this)">SUB</button>
+                <button value="娱乐" onclick="getVal(this)">娱乐</button>
+            </label>
+        </div>
 
         <br>
             开始时间:<input type="time" id="appt" name="appt" placeholder="默认当前时间">
@@ -31,33 +38,25 @@
             结束时间:<input type="time" id="appt" name="appt">
         <br>
         <br>
-        <button style="display: block; margin: 0 auto;">确定</button>
+        <button style="display: block; margin: 0 auto;" onclick="submit()">确定</button>
 
         <br>
         <h5>时间记录</h5>
         <ul>
-            <li>0-1. Vue学习</li>
-            <li>1.-4. JAVA</li>
-            <li>4.-5. 娱乐</li>
-            <li>5.-12. 7h睡眠</li>
-            <li>12.-14.</li>
-            <li>14.-14.5 娱乐</li>
-            <li>2.5 - 3.5 JAVA</li>
-            <li>3.5 -4 SUB</li>
-            <li>4.-5. 1h 睡眠</li>
-            <li>5.-5.10 娱乐</li>
-            <li>5.10-6.10 JAVA</li>
-            <li>6.10-7 娱乐(吃饭)</li>
-            <li></li>
+            <li>0-1 JAVA</li>
         </ul>
+
+        <br>
         <h5>今日总结</h5>
         <ul>
-            <li>娱乐 2.5H</li>
-            <li>工作 11.5H</li>
-            <li></li>
+            <li>
+            </li>
         </ul>
     </div>
     
 </body>
 <script src="./script.js"></script>
+<script>
+
+</script>
 </html>

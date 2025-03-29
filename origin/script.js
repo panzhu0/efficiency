@@ -46,3 +46,12 @@ function loadCheckBoxState(){
     }
 }
 
+
+let butVal;
+function getVal(button){
+    // 获取按钮的值
+    butVal = button.value;
+}
+function submit(){
+    alert(butVal);
+}
