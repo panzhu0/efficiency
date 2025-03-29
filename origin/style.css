@@ -13,3 +13,23 @@ div{
     width: 250px; /* 必须指定宽度 */
     margin: 0 auto; /* 左右宽度自动，上下填满 */
 }
+
+
+.toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #6d8d65;
+    color: rgb(207, 189, 83);
+    padding: 12px 24px;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(214, 213, 214, 0.8);
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+  }
+  
+  .toast.show {
+    opacity: 1;
+  }

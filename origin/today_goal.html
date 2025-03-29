@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
+    <div id="toast" class="toast"></div>
     <div>
         <h1>今日TODO</h1>
         <label for="">
@@ -20,6 +21,11 @@
         <br>
         <hr>
         <h1>今日时间规划</h1>
+        <h5>目标</h5>
+        <ul>
+            <li>xxxx</li>
+        </ul>
+        <br>
         <h5>行为记录</h5>
 
         <div>
@@ -33,19 +39,18 @@
         </div>
 
         <br>
-            开始时间:<input type="time" id="appt" name="appt" placeholder="默认当前时间">
+            开始时间:
+            <input type="time" id="start_time">
         <br>
-            结束时间:<input type="time" id="appt" name="appt">
+            结束时间:
+            <input type="time" id="end_time">
         <br>
         <br>
-        <button style="display: block; margin: 0 auto;" onclick="submit()">确定</button>
+        <button style="display: block; margin: 0 auto;" onclick="save()">确定</button>
 
         <br>
-        <h5>时间记录</h5>
-        <ul>
-            <li>0-1 JAVA</li>
-        </ul>
-
+        <h5>时间记录 <button onclick="empty()">清空</button></h5>
+        <div id="displayArea"></div>
         <br>
         <h5>今日总结</h5>
         <ul>
@@ -55,8 +60,5 @@
     </div>
     
 </body>
-<script src="./script.js"></script>
-<script>
-
-</script>
+<script src="./time.js"></script>
 </html>
