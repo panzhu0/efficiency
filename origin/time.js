@@ -99,7 +99,73 @@ function updateToCurrentTime() {
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
     document.getElementById('end_time').value = `${hours}:${minutes}`;
-  }
+}
   
   // 每分钟自动更新一次
 //   setInterval(updateToCurrentTime, 60000);
+
+
+// echart 饼图显示数据
+var charDom = document.getElementById("behaviorBarCharts");
+var myChart = echarts.init(charDom);
+var option;
+
+// 饼图配置项目
+option = {
+    title:{
+        text:'今日时间分配',
+        subtext: getTodayISODate(),
+        left:'center'
+    },
+    tooltip: {
+      trigger: 'item'
+    },
+    legend: {
+      orient: 'vertical',
+      top: '5%',
+      left: 'left',
+    },
+    series: [
+      {
+        name: '时间分配',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        // hover时的标签
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 40,
+            fontWeight: 'bold'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: [
+          { value: 1048, name: 'Search Engine' },
+          { value: 735, name: 'Direct' },
+          { value: 580, name: 'Email' },
+          { value: 484, name: 'Union Ads' },
+          { value: 300, name: 'Video Ads' }
+        ]
+      }
+    ]
+  };
+  
+option && myChart.setOption(option);
+
+
+// 获取当前日期 格式 2020-01-01
+function getTodayISODate(){
+    return new Date().toISOString().split('T')[0];
+}

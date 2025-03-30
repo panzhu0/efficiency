@@ -33,3 +33,12 @@ div{
   .toast.show {
     opacity: 1;
   }
+
+  .behaviorChar{
+    width: 600px;
+    height: 400px;
+    margin: 30px auto;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
