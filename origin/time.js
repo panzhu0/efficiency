@@ -74,9 +74,11 @@ function displayBehavior(data){
     }
     display.appendChild(ul);
     // 更新开始时间
-    document.getElementById("start_time").value = last_behavior_end_time;
+    if(last_behavior_end_time){
+      document.getElementById("start_time").value = last_behavior_end_time;
+    }
     // 更新图表数据
-    option && myChart.setOption(option); 
+    option && myChart.setOption(option);
 }
 
 // TOAST 显示
@@ -114,7 +116,7 @@ var option;
 option = {
     title:{
         text:'今日时间分配',
-        subtext: getTodayISODate(),
+        subtext: getTodayDate(),
         left:'center'
     },
     tooltip: {
@@ -149,7 +151,7 @@ option = {
         },
         // hover时的标签
         label: {
-          show: false,
+          show: true,
           position: 'center'
         },
         emphasis: {
@@ -171,8 +173,8 @@ option && myChart.setOption(option);
 
 
 // 获取当前日期 格式 2020-01-01
-function getTodayISODate(){
-    return new Date().toISOString().split('T')[0];
+function getTodayDate(){
+    return new Date().toLocaleString().split(' ')[0];
 }
 
 // 从本地加载数据 然后返回数组结果
@@ -180,6 +182,10 @@ function getDateFromLocal(){
     data_str = localStorage.getItem(CONSTANT_BehaviorListStr);
     data = JSON.parse(data_str);
     const map = new Map();
+
+    if(!data){
+      return;
+    }
 
     for(const item of data){
         // 间隔时间
@@ -218,10 +224,6 @@ function getTimeDiffSimple(startTime, endTime) {
     return diffMinutes / 60;
 }
 
-function displaySummary(){
-    const summary = document.getElementById('summary')
-}
-
 /**
  * 将小时数据转换为分钟
  * @param {Array} hoursData - 原始小时数据数组
@@ -254,14 +256,7 @@ option2 = {
     },
     radar: {
     //   shape: 'circle',
-      indicator: [
-        { name: 'Sales', max: 6500 },
-        { name: 'Administration', max: 16000 },
-        { name: 'Information Technology', max: 30000 },
-        { name: 'Customer Support', max: 38000 },
-        { name: 'Development', max: 52000 },
-        { name: 'Marketing', max: 25000 }
-      ]
+      indicator: radar_indicator(),
     },
     series: [
       {
@@ -280,5 +275,29 @@ option2 = {
       }
     ],
 };
+
+// 获取雷达图的指标信息
+function radar_indicator(){
+  const set = new Set();
+  const infos = JSON.parse(localStorage.getItem(CONSTANT_BehaviorListStr))
+  for(const item of infos){
+    set.add(item['behavior']);
+  }
+  const ret = [];
+  for(const item of set){
+    ret.push({
+      name:item['behavior'],
+      max:6,
+    })
+  }
+  // 设置每个数据的默认时间都为6个小时
+  return ret;
+}
+
+
+// 获取雷达图的数据
+function radar_data(){
+
+}
   
 option2 && myChart2.setOption(option2);

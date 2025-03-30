@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>今日目标</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style.css">
-    <!-- 引入 ECharts 文件 -->
-    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <title>今日目标</title>
 </head>
 <body>
     <h1 style="text-align: center;">今日TODO</h1>
@@ -17,16 +14,14 @@
         <div class="left">
             <br>
             <h5>今日时间规划</h5>
-            <ul>
-                <li>在这里设置自己的时间规划</li>
-            </ul>
-            <h5>目标</h5>
-            <ul>
-                <li>在这里写自己想要做什么?</li>
-            </ul>
+            <input type="text" placeholder="你计划如何使用你的时间?"> <input type="button" value="增加" onclick="add_schedule()">
+
+            <h5>Todo</h5>
+            <input type="text" placeholder="你想要做什么?"> <input type="button" value="增加" onclick="add_target()">
+
             <h5>行为</h5>
             <div>
-                <label for="value" id="behavior">
+                <label id="behavior">
                     <button value="数学" onclick="getVal(this)">数学</button>
                     <button value="科技" onclick="getVal(this)">科技</button>
                     <button value="I&E" onclick="getVal(this)">I&E</button>
@@ -64,5 +59,6 @@
     <!-- 浮动窗口 -->
     <div id="toast" class="toast"></div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <script src="./time.js"></script>
 </html>
