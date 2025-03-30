@@ -151,13 +151,7 @@ option = {
         labelLine: {
           show: false
         },
-        data: [
-          { value: 1048, name: 'Search Engine' },
-          { value: 735, name: 'Direct' },
-          { value: 580, name: 'Email' },
-          { value: 484, name: 'Union Ads' },
-          { value: 300, name: 'Video Ads' }
-        ]
+        data: getDateFromLocal()
       }
     ]
   };
@@ -168,4 +162,55 @@ option && myChart.setOption(option);
 // 获取当前日期 格式 2020-01-01
 function getTodayISODate(){
     return new Date().toISOString().split('T')[0];
+}
+
+// 从本地加载数据 然后返回数组结果
+function getDateFromLocal(){
+    data_str = localStorage.getItem(CONSTANT_BehaviorListStr);
+    data = JSON.parse(data_str);
+    const map = new Map();
+
+    for(const item of data){
+        // 间隔时间
+        const duration = getTimeDiffSimple(item['startTime'],item['endTime']);
+
+        // Map 记录对应的数据
+        map.set(
+            item['behavior'],
+            Number(map.get(item['behavior'])) + duration || 0 + duration
+        );
+    }
+
+    // 转换为 {value: 时间(h) name: 行为}
+    const retData = [];
+    map.forEach((value, key) => {
+        a = {
+            name : key,
+            value : value,
+        }
+        retData.push(a);
+    });
+
+    return retData;
+    data: [
+        { value: 1048, name: 'Search Engine' },
+        { value: 735, name: 'Direct' },
+        { value: 580, name: 'Email' },
+        { value: 484, name: 'Union Ads' },
+        { value: 300, name: 'Video Ads' }
+      ]
+}
+
+function getTimeDiffSimple(startTime, endTime) {
+    // 解析时间字符串
+    const [startHour, startMinute] = startTime.split(':').map(Number);
+    const [endHour, endMinute] = endTime.split(':').map(Number);
+    
+    // 计算总分钟数差值
+    const totalStartMinutes = startHour * 60 + startMinute;
+    const totalEndMinutes = endHour * 60 + endMinute;
+    const diffMinutes = totalEndMinutes - totalStartMinutes;
+    
+    // 转换为小时
+    return diffMinutes / 60;
 }
