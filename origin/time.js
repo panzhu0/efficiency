@@ -48,6 +48,7 @@ function save(){
         // 将数据显示到页面上
         displayBehavior(saveBahaviors);
     }
+
 }
 
 // 从本地存储加载数据
@@ -103,10 +104,6 @@ function updateToCurrentTime() {
     const minutes = now.getMinutes().toString().padStart(2, '0');
     document.getElementById('end_time').value = `${hours}:${minutes}`;
 }
-  
-  // 每分钟自动更新一次
-//   setInterval(updateToCurrentTime, 60000);
-
 
 // echart 饼图显示数据
 var charDom = document.getElementById("behaviorBarCharts");
@@ -121,7 +118,19 @@ option = {
         left:'center'
     },
     tooltip: {
-      trigger: 'item'
+      trigger: 'item',
+      formatter: function(params) {
+        const minutes = (params.value) * 60;
+        const hours = params.value;
+        const percent = params.percent;
+
+        return `
+            ${params.name}<br/>
+            分钟数: ${minutes} 分钟<br/>
+            小时数: ${hours} 小时<br/>
+            占比: ${percent}%
+        `;
+        },
     },
     legend: {
       orient: 'vertical',
@@ -209,3 +218,68 @@ function getTimeDiffSimple(startTime, endTime) {
     // 转换为小时
     return diffMinutes / 60;
 }
+
+function displaySummary(){
+    const summary = document.getElementById('summary')
+}
+
+/**
+ * 将小时数据转换为分钟
+ * @param {Array} hoursData - 原始小时数据数组
+ * @returns {Array} 转换后的分钟数据数组
+ */
+function hoursToMinutes(hoursData) {
+    return hoursData.map(item => {
+        return {
+            name: item.name,
+            value: parseFloat((item.value * 60).toFixed(2)),
+            rawValue: item.value,
+            // 保留原始对象的所有其他属性
+            ...item
+        };
+    });
+}
+
+// 雷达图
+var charDOM2 = document.getElementById('summary');
+var myChart2 = echarts.init(charDOM2);
+var option2;
+
+option2 = {
+    title: {
+      text: '时间分布情况',
+      left: 'center'
+    },
+    legend: {
+      data: ['目标时间分配', '实际时间分配']
+    },
+    radar: {
+      // shape: 'circle',
+      indicator: [
+        { name: 'Sales', max: 6500 },
+        { name: 'Administration', max: 16000 },
+        { name: 'Information Technology', max: 30000 },
+        { name: 'Customer Support', max: 38000 },
+        { name: 'Development', max: 52000 },
+        { name: 'Marketing', max: 25000 }
+      ]
+    },
+    series: [
+      {
+        name: 'Budget vs spending',
+        type: 'radar',
+        data: [
+          {
+            value: [4200, 3000, 20000, 35000, 50000, 18000],
+            name: 'Allocated Budget'
+          },
+          {
+            value: [5000, 14000, 28000, 26000, 42000, 21000],
+            name: 'Actual Spending'
+          }
+        ]
+      }
+    ],
+};
+  
+option2 && myChart2.setOption(option2);

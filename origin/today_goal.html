@@ -42,21 +42,22 @@
         <button style="display: block; margin: 0 auto;" onclick="save()">确定</button>
 
         <br>
-        <!-- 行为记录无序列表 -->
-        <h5>行为记录 </h5>
-        <div id="displayArea"></div>
-        <button style="display: block; margin: 0 auto;" onclick="empty()">清空</button>
-        <br>
         <!-- 饼图显示,今日行为-->
         <div id="behaviorBarCharts" class="behaviorChar"></div>
         <br>
+
+        <!-- 行为记录无序列表 -->
+        <div>
+            <h5>行为记录 </h5>
+            <div id="displayArea"></div>
+            <button style="display: block; margin: 0 auto;" onclick="empty()">清空</button>
+        </div>
+
+        <br>
+
         <!-- 今日总结 -->
         <h5>今日总结</h5>
-        <ul>
-            <li>
-            </li>
-        </ul>
-        <br>
+        <div id="summary" class="summary"></div>
         <br>
         <a href="./index.html">index.html</a>
     </div>

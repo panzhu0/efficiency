@@ -34,7 +34,7 @@ div{
     opacity: 1;
   }
 
-  .behaviorChar{
+.summary,.behaviorChar{
     width: 600px;
     height: 400px;
     margin: 30px auto;
