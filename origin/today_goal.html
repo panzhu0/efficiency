@@ -13,11 +13,13 @@
     <div>
         <h1>今日TODO</h1>
         <hr>
-        <br>
-        <h3>今日时间规划</h3>
+        <h5>今日时间规划</h5>
+        <ul>
+            <li>在这里设置自己的时间规划</li>
+        </ul>
         <h5>目标</h5>
         <ul>
-            <li>xxxx</li>
+            <li>在这里写自己想要做什么?</li>
         </ul>
         <h5>行为</h5>
         <div>
@@ -30,35 +32,25 @@
                 <button value="睡眠" onclick="getVal(this)">睡眠</button>
             </label>
         </div>
-
         <br>
-            开始时间:
-            <input type="time" id="start_time">
-        <br>
-            结束时间:
-            <input type="time" id="end_time">
-        <br>
+        开始时间:
+        <input type="time" id="start_time"><br>
+        结束时间:
+        <input type="time" id="end_time"><br>
         <br>
         <button style="display: block; margin: 0 auto;" onclick="save()">确定</button>
 
         <br>
         <!-- 饼图显示,今日行为-->
-        <div id="behaviorBarCharts" class="behaviorChar"></div>
-        <br>
-
-        <!-- 行为记录无序列表 -->
         <div>
             <h5>行为记录 </h5>
             <div id="displayArea"></div>
             <button style="display: block; margin: 0 auto;" onclick="empty()">清空</button>
         </div>
-
-        <br>
-
-        <!-- 今日总结 -->
         <h5>今日总结</h5>
+        <div id="behaviorBarCharts" class="behaviorChar"></div>
         <div id="summary" class="summary"></div>
-        <br>
+        <!-- 行为记录无序列表 -->
         <a href="./index.html">index.html</a>
     </div>
 </body>

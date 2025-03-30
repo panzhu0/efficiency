@@ -248,13 +248,13 @@ var option2;
 option2 = {
     title: {
       text: '时间分布情况',
-      left: 'center'
+      left: 'left'
     },
     legend: {
       data: ['目标时间分配', '实际时间分配']
     },
     radar: {
-      // shape: 'circle',
+    //   shape: 'circle',
       indicator: [
         { name: 'Sales', max: 6500 },
         { name: 'Administration', max: 16000 },
@@ -270,12 +270,12 @@ option2 = {
         type: 'radar',
         data: [
           {
-            value: [4200, 3000, 20000, 35000, 50000, 18000],
-            name: 'Allocated Budget'
+            // value: [4200, 3000, 20000, 35000, 50000, 18000],
+            name: '目标时间分配'
           },
           {
-            value: [5000, 14000, 28000, 26000, 42000, 21000],
-            name: 'Actual Spending'
+            // value: [5000, 14000, 28000, 26000, 42000, 21000],
+            name: '实际时间分配'
           }
         ]
       }
