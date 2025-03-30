@@ -47,8 +47,21 @@ function save(){
 
         // 将数据显示到页面上
         displayBehavior(saveBahaviors);
+        freshChart();
     }
 
+}
+
+// 刷新所有chart
+function freshChart(){
+  myChart.clear();
+  myChart2.clear();
+  if(option){
+    option&&myChart.setOption(option);
+  }
+  if(option2){
+    option2&&myChart2.setOption(option2);
+  }
 }
 
 // 从本地存储加载数据
@@ -66,19 +79,22 @@ function displayBehavior(data){
     const ul = document.createElement('ul');
     // 今日最近一件已完成行为的结束时间
     let last_behavior_end_time;
-    for(const item of data){
-        const li = document.createElement('li');
-        li.innerHTML = `${item['startTime']} -> ${item['endTime']} : ${item['behavior']}`
-        ul.appendChild(li);
-        last_behavior_end_time = item['endTime'];
+    if(data){
+      // 如果有数据
+      for(const item of data){
+          const li = document.createElement('li');
+          li.innerHTML = `${item['startTime']} -> ${item['endTime']} : ${item['behavior']}`
+          ul.appendChild(li);
+          last_behavior_end_time = item['endTime'];
+      }
+      display.appendChild(ul);
+      // 更新开始时间
+      if(last_behavior_end_time){
+        document.getElementById("start_time").value = last_behavior_end_time;
+      }
+      // 更新图表数据
+      option && myChart.setOption(option);
     }
-    display.appendChild(ul);
-    // 更新开始时间
-    if(last_behavior_end_time){
-      document.getElementById("start_time").value = last_behavior_end_time;
-    }
-    // 更新图表数据
-    option && myChart.setOption(option);
 }
 
 // TOAST 显示
@@ -95,7 +111,11 @@ function showToast(message) {
 // 清空LocalStore 中的行为数组记录,然后刷新显示
 function empty(){
     loadFromLocal();
+    displayBehavior();
     localStorage.removeItem(CONSTANT_BehaviorListStr);
+    //重新获取数据
+    // 刷新所有Chart
+    freshChart();
     showToast("已清空行为记录");
 }
 
@@ -151,7 +171,7 @@ option = {
         },
         // hover时的标签
         label: {
-          show: true,
+          show: false,
           position: 'center'
         },
         emphasis: {
@@ -177,16 +197,17 @@ function getTodayDate(){
     return new Date().toLocaleString().split(' ')[0];
 }
 
-// 从本地加载数据 然后返回数组结果
+/**
+ * 从LOCALSTORAGE 获取数据并返回
+ * @returns 结果数组 [{name:"", value:100},{} ,{} ,{}]]
+ */
 function getDateFromLocal(){
     data_str = localStorage.getItem(CONSTANT_BehaviorListStr);
     data = JSON.parse(data_str);
     const map = new Map();
-
     if(!data){
       return;
     }
-
     for(const item of data){
         // 间隔时间
         const duration = getTimeDiffSimple(item['startTime'],item['endTime']);
@@ -207,6 +228,7 @@ function getDateFromLocal(){
         }
         retData.push(a);
     });
+
     return retData;
 }
 
@@ -247,57 +269,111 @@ var myChart2 = echarts.init(charDOM2);
 var option2;
 
 option2 = {
+  // 标签
     title: {
       text: '时间分布情况',
-      left: 'left'
+      left: 'left',
     },
+    // 标签
     legend: {
-      data: ['目标时间分配', '实际时间分配']
+      data: ['目标时间分配', '实际时间分配'],
     },
+    // 雷达图指标
     radar: {
     //   shape: 'circle',
       indicator: radar_indicator(),
     },
+    // 
     series: [
       {
         name: 'Budget vs spending',
         type: 'radar',
         data: [
           {
-            // value: [4200, 3000, 20000, 35000, 50000, 18000],
-            name: '目标时间分配'
+            // name: '目标时间分配',
+            value: radar_except_data(),
           },
           {
-            // value: [5000, 14000, 28000, 26000, 42000, 21000],
-            name: '实际时间分配'
+            name: '实际时间分配',
+            value:radar_actuall_data(),
+            label:{
+              show: true,
+              position: 'top', // 标签位置（'top'/'left'/'right'/'bottom'）
+              formatter: '{c}' // 显示数据值（{a}系列名, {b}维度名, {c}数值）
+            },
+            // 区域样式
+            areaStyle: { opacity: 0.2 }
           }
         ]
       }
     ],
 };
 
-// 获取雷达图的指标信息
-function radar_indicator(){
-  const set = new Set();
-  const infos = JSON.parse(localStorage.getItem(CONSTANT_BehaviorListStr))
-  for(const item of infos){
-    set.add(item['behavior']);
+if(option2){
+  option2 && myChart2.setOption(option2);
+}
+
+// 获取雷达图的最大值
+function radar_max(){
+  data = getDateFromLocal();
+  let max = 0;
+  // 没有数据就返回0
+  if(!data){
+    return max;
   }
+  // 返回时间最大值
+  for(const item of data){
+    if(item['value'] > max){
+      max = item['value'];
+    }
+  }
+  return max;
+}
+
+// 获取雷达图的指标信息
+// 格式:  {name:"",max:123};
+function radar_indicator(){
   const ret = [];
-  for(const item of set){
+  data = getDateFromLocal();
+  if(!data){
+    return ret;
+  }
+  for(const item of data){
     ret.push({
-      name:item['behavior'],
-      max:6,
+      name:item['name'],
+      max:radar_max()
     })
   }
-  // 设置每个数据的默认时间都为6个小时
+  // 遍历
   return ret;
 }
 
 
 // 获取雷达图的数据
-function radar_data(){
+function radar_actuall_data(){
+  data = getDateFromLocal();
+  let ret= [];
+  if(!data){
+    return ret; 
+  }
+  for(const v of data){
+    ret.push(
+      parseFloat(v['value'].toFixed(2))
+    ); //值 只保留后两位
+  }
+  return ret;
+}
 
+function radar_except_data(){
+  const data = JSON.parse(localStorage.getItem(CONSTANT_BehaviorListStr));
+  const val = [];
+  if(!data){
+    return undefined;
+  }
+
+  for(const v of data){
+    val.push(radar_max());
+  }
+  return val;
 }
   
-option2 && myChart2.setOption(option2);
