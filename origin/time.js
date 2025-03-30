@@ -40,6 +40,7 @@ function save(){
 
         // 从本地加载数据
         let saveBahaviors =JSON.parse(localStorage.getItem(CONSTANT_BehaviorListStr)) || [];
+
         // 将数据添加并记录到本地
         saveBahaviors.push(behaviorList);
         localStorage.setItem(CONSTANT_BehaviorListStr,JSON.stringify(saveBahaviors));
@@ -73,6 +74,8 @@ function displayBehavior(data){
     display.appendChild(ul);
     // 更新开始时间
     document.getElementById("start_time").value = last_behavior_end_time;
+    // 更新图表数据
+    option && myChart.setOption(option); 
 }
 
 // TOAST 显示
@@ -181,7 +184,7 @@ function getDateFromLocal(){
         );
     }
 
-    // 转换为 {value: 时间(h) name: 行为}
+    // 转换为 {value: 时间(h) name: 行为} JSON 对象并返回
     const retData = [];
     map.forEach((value, key) => {
         a = {
@@ -190,15 +193,7 @@ function getDateFromLocal(){
         }
         retData.push(a);
     });
-
     return retData;
-    data: [
-        { value: 1048, name: 'Search Engine' },
-        { value: 735, name: 'Direct' },
-        { value: 580, name: 'Email' },
-        { value: 484, name: 'Union Ads' },
-        { value: 300, name: 'Video Ads' }
-      ]
 }
 
 function getTimeDiffSimple(startTime, endTime) {
