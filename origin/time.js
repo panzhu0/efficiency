@@ -62,12 +62,17 @@ function displayBehavior(data){
     display.innerHTML = "";
     // 重新加载数据
     const ul = document.createElement('ul');
+    // 今日最近一件已完成行为的结束时间
+    let last_behavior_end_time;
     for(const item of data){
         const li = document.createElement('li');
         li.innerHTML = `${item['startTime']} -> ${item['endTime']} : ${item['behavior']}`
         ul.appendChild(li);
+        last_behavior_end_time = item['endTime'];
     }
     display.appendChild(ul);
+    // 更新开始时间
+    document.getElementById("start_time").value = last_behavior_end_time;
 }
 
 // TOAST 显示
@@ -93,7 +98,7 @@ function updateToCurrentTime() {
     const now = new Date();
     const hours = now.getHours().toString().padStart(2, '0');
     const minutes = now.getMinutes().toString().padStart(2, '0');
-    document.getElementById('start_time').value = `${hours}:${minutes}`;
+    document.getElementById('end_time').value = `${hours}:${minutes}`;
   }
   
   // 每分钟自动更新一次
