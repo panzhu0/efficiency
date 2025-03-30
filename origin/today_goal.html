@@ -2,57 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>今日目标</title>
     <link rel="stylesheet" href="./style.css">
     <!-- 引入 ECharts 文件 -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 </head>
 <body>
-    <div id="toast" class="toast"></div>
-    <div>
-        <h1>今日TODO</h1>
-        <hr>
-        <h5>今日时间规划</h5>
-        <ul>
-            <li>在这里设置自己的时间规划</li>
-        </ul>
-        <h5>目标</h5>
-        <ul>
-            <li>在这里写自己想要做什么?</li>
-        </ul>
-        <h5>行为</h5>
-        <div>
-            <label for="value" id="behavior">
-                <button value="数学" onclick="getVal(this)">数学</button>
-                <button value="科技" onclick="getVal(this)">科技</button>
-                <button value="I&E" onclick="getVal(this)">I&E</button>
-                <button value="Sub" onclick="getVal(this)">SUB</button>
-                <button value="娱乐" onclick="getVal(this)">娱乐</button>
-                <button value="睡眠" onclick="getVal(this)">睡眠</button>
-            </label>
+    <h1 style="text-align: center;">今日TODO</h1>
+    <hr>
+    <div class="container">
+        <!-- 左边 -->
+        <div class="left">
+            <br>
+            <h5>今日时间规划</h5>
+            <ul>
+                <li>在这里设置自己的时间规划</li>
+            </ul>
+            <h5>目标</h5>
+            <ul>
+                <li>在这里写自己想要做什么?</li>
+            </ul>
+            <h5>行为</h5>
+            <div>
+                <label for="value" id="behavior">
+                    <button value="数学" onclick="getVal(this)">数学</button>
+                    <button value="科技" onclick="getVal(this)">科技</button>
+                    <button value="I&E" onclick="getVal(this)">I&E</button>
+                    <button value="Sub" onclick="getVal(this)">SUB</button>
+                    <button value="娱乐" onclick="getVal(this)">娱乐</button>
+                    <button value="睡眠" onclick="getVal(this)">睡眠</button>
+                </label>
+            </div>
+            <br>
+            开始时间:
+            <input type="time" id="start_time"><br>
+            结束时间:
+            <input type="time" id="end_time"><br>
+            <br>
+            <button style="display: block; margin: 0 auto;" onclick="save()">确定</button>
+            <br>
+            <div>
+                <h5>行为记录 </h5>
+                <div id="displayArea"></div>
+                <button style="display: block; margin: 0 auto;" onclick="empty()">清空</button>
+            </div>
         </div>
-        <br>
-        开始时间:
-        <input type="time" id="start_time"><br>
-        结束时间:
-        <input type="time" id="end_time"><br>
-        <br>
-        <button style="display: block; margin: 0 auto;" onclick="save()">确定</button>
 
-        <br>
-        <!-- 饼图显示,今日行为-->
-        <div>
-            <h5>行为记录 </h5>
-            <div id="displayArea"></div>
-            <button style="display: block; margin: 0 auto;" onclick="empty()">清空</button>
+        <!-- 右边 -->
+        <div class="right">
+            <!-- 饼图显示,今日行为-->
+            <h5>今日总结</h5>
+            <div id="behaviorBarCharts" class="behaviorChar"></div>
+            <div id="summary" class="summary"></div>
+            <!-- 行为记录无序列表 -->
+            <a href="./index.html">index.html</a>
         </div>
-        <h5>今日总结</h5>
-        <div id="behaviorBarCharts" class="behaviorChar"></div>
-        <div id="summary" class="summary"></div>
-        <!-- 行为记录无序列表 -->
-        <a href="./index.html">index.html</a>
+
     </div>
+    <!-- 浮动窗口 -->
+    <div id="toast" class="toast"></div>
 </body>
 <script src="./time.js"></script>
 </html>

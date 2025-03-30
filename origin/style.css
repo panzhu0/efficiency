@@ -1,7 +1,7 @@
-body{
-    background-color: #f5f7fa; /* 使用你喜欢的颜色值 */
-    margin: 0; /* 移除默认边距确保全屏覆盖 */
-    min-height: 100vh; /* 确保至少覆盖整个视口高度 */
+body {
+  color: #253331;
+  margin: 0;
+  padding: 0;
 }
 
 .completed {
@@ -9,11 +9,23 @@ body{
     color: #999; /* 可选：添加灰色使完成项更明显 */
 }
 
-div{
-    width: 250px; /* 必须指定宽度 */
-    margin: 0 auto; /* 左右宽度自动，上下填满 */
+.container{
+  overflow: hidden;
+  width: 1050px;
+  margin: 0 auto;
 }
 
+.left{
+  float: left;
+  width: 250px; /* 必须指定宽度 */
+  margin: 0 auto; /* 左右宽度自动，上下填满 */
+}
+
+.right{
+  float: right;
+  width: 600px;
+  margin: 0 auto;
+}
 
 .toast {
     position: fixed;

@@ -123,7 +123,6 @@ option = {
         const minutes = (params.value) * 60;
         const hours = params.value;
         const percent = params.percent;
-
         return `
             ${params.name}<br/>
             分钟数: ${minutes} 分钟<br/>
@@ -142,7 +141,7 @@ option = {
         name: '时间分配',
         type: 'pie',
         radius: ['40%', '70%'],
-        avoidLabelOverlap: false,
+        avoidLabelOverlap: true,
         itemStyle: {
           borderRadius: 10,
           borderColor: '#fff',
@@ -161,7 +160,7 @@ option = {
           }
         },
         labelLine: {
-          show: false
+          show: true
         },
         data: getDateFromLocal()
       }
