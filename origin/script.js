@@ -1,9 +1,12 @@
 // 全局变量
 let btnValue; //按钮的值
-const CONSTANTBehaviorListStr = "BEHAVIORLIST"; // LS 常量名
-const div = document.getElementById('gen-behavior');  // 获取div
-const start = document.getElementById('start-time'); // 开始时间选择器
-const end = document.getElementById('end-time'); // 开始时间选择器
+const CONSTANTBehaviorListStr = "BEHAVIORLIST";       // LS BEHAVIOR 常量名
+const CONSTANTTODOLIST = "TODOLIST";                  // LS TODO 常量名
+const start = document.getElementById('start-time');  // 开始时间元素对象
+const end = document.getElementById('end-time');      // 开始时间元素对象
+const todoDiv = document.getElementById('gen-todo')   // todoDIV元素对象 
+const behaviorDiv = document.getElementById('gen-behavior');  //behaviorDiv元素对象
+const todoInput = document.getElementById('todo-content');    //todo实际内容元素对象
 
 /**
  * 获取按钮的值
@@ -12,6 +15,90 @@ const end = document.getElementById('end-time'); // 开始时间选择器
 function getVal(btn){
     btnValue = btn.value;
 }
+
+/**
+ * 增加待办事件数据保存在LS
+ */
+function addTodo(){
+  if(!todoInput.value){
+    showToast("请输入TODO内容");
+    return;
+  }
+  // 获取TODO的文本信息
+  const val = todoInput.value;
+  // 将TODO加入到LS数组
+  addTodo2LS(val);
+  // 刷新TODO DIV的内容
+  freshTodoDiv();
+  // 清空文本
+  todoInput.value="";
+  showToast(`添加Todo ${val}`);
+}
+
+/**
+ * 刷新TodoList
+ */
+function freshTodoDiv(){
+  const array = JSON.parse(getTodoFromLS());
+  // 清空原有的
+  todoDiv.innerHTML = "";
+  // 显示新数据
+  // <label>
+  //    <input type="checkbox" class="todo-checkbox"> 吃饭
+  // </label>
+  // <br>
+  for(const item of array){
+    // label
+    const label = document.createElement("label");
+    //  input
+    const input = document.createElement("input");
+    input.type='checkbox';
+    input.classList.add('todo-checkbox');
+    label.appendChild(input);
+    //  文本内容
+    const span = document.createElement('span');
+    span.innerText = item;
+    label.appendChild(span);
+    todoDiv.appendChild(label);
+    // br
+    const br = document.createElement('br');
+    todoDiv.appendChild(br);
+  }
+}
+
+/**
+ * 从LS获取TODO 列表
+ */
+function getTodoFromLS(){
+  return localStorage.getItem(CONSTANTTODOLIST);
+}
+
+/**
+ * 将TODO增加到LS TODOList
+ */
+function addTodo2LS(todo){
+  // 获取原有数组
+  const array = JSON.parse(localStorage.getItem(CONSTANTTODOLIST)) || [];
+
+  // 增加todo到数组
+  array.push(todo);
+
+  // 保存数据到LS
+  const arrayStr = JSON.stringify(array);
+  localStorage.setItem(CONSTANTTODOLIST,arrayStr);
+}
+
+// 监听 todo 多选框
+document.querySelectorAll('.todo-checkbox').forEach(checkbox => {
+  checkbox.addEventListener('change', function() {
+    const label = this.parentElement;
+    if (this.checked) {
+      label.classList.add('strikethrough');
+    } else {
+      label.classList.remove('strikethrough');
+    }
+  });
+});
 
 /**
  * 保存行为信息到LocalStore,并刷新行为列表
@@ -65,7 +152,7 @@ function localStoreBehaviorAdd(jsObj){
  */
 function freshBehaviorDiv(){
     // 清空原有数据
-    div.innerHTML = "";
+    behaviorDiv.innerHTML = "";
 
     // 从LS加载数据
     const data = JSON.parse(getDataFromLS());
@@ -81,7 +168,7 @@ function freshBehaviorDiv(){
         li.innerHTML = `${item['startTime']} -> ${item['endTime']} : ${item['behavior']}`
         ul.appendChild(li);
     }
-    div.appendChild(ul);
+    behaviorDiv.appendChild(ul);
 }
 
 /**
@@ -109,10 +196,6 @@ function freshEndTime(){
     // 默认设置为当前时间
     end.value = currentTime();
 }
-
-freshBehaviorDiv();
-freshStartTime()
-freshEndTime();
 
 /**
  * 获取当前时间
@@ -146,14 +229,12 @@ function showToast(message) {
     }, 2500); // 3秒后消失
 }
 
-// 刷新行为列表
-// shBehaviorDiv();
-
 // 清空LS中的习惯数据
 function empty(){
     localStorage.removeItem(CONSTANTBehaviorListStr);
     freshBehaviorDiv();
     freshBarChart();
+    freshRadarChart();
     freshStartTime();
     showToast("已清空!");
 }
@@ -272,66 +353,40 @@ function timeDiff(start,end){
   return diffMinutes / 60;
 }
 
-
-// 刷新饼图
-function freshBarChart(){
-  myChart.setOption({
-    series: [{ data: getBarDate()}]
-  });
-}
-
 // 雷达图
-var charDOM2 = document.getElementById('chart-radar');
-var myChart2 = echarts.init(charDOM2);
+var chartDOM2 = document.getElementById('chart-radar');
+var myChart2 = echarts.init(chartDOM2);
 var option2;
 
 option2 = {
-  // 标签
-    title: {
-      text: '时间分布情况',
-      left: 'left',
-    },
-    itemStyle: {
-      borderRadius: 1,
-      borderColor: '#fff',
-      borderWidth: 1
-    },
-    // 标签
-    legend: {
-      data: ['极限时间分配', '实际时间分配'],
-      left: 'right'
-    },
-    // 雷达图指标
-    radar: {
-      // shape: 'circle',
-      indicator: getRadarIndicator(),
-    },
-    series: [
-      {
-        name: 'Budget vs spending',
-        type: 'radar',
-        data: [
-          // {
-          //   name: '极限时间分配',
-          //   value: getRadarExceptData(),
-          // },
-          {
-            name: '实际时间分配',
-            value:getRadarActuallData(),
-            label:{
-              show: true,
-              position: 'top', // 标签位置（'top'/'left'/'right'/'bottom'）
-              formatter: '{c}' // 显示数据值（{a}系列名, {b}维度名, {c}数值）
-            },
-            // 区域样式
-            areaStyle: { opacity: 0.7 }
-          }
-        ]
-      }
-    ],
+  title: {
+    text: 'Basic Radar Chart'
+  },
+  legend: {
+    data: ['极限', '实际时间']
+  },
+  radar: {
+    // shape: 'circle',
+    indicator: getRadarIndicator(),
+  },
+  series: [
+    {
+      name: '极限时间 vs 实际时间',
+      type: 'radar',
+      data: [
+        {
+          value: getRadarExceptData(),
+          name: '极限'
+        },
+        {
+          value: getRadarActuallData(),
+          name: '实际时间'
+        }
+      ]
+    }
+  ]
 };
 
-option2 && myChart2.setOption(option2);
 
 // 获取雷达图的最大值
 function radarMax(){
@@ -369,7 +424,7 @@ function getRadarIndicator(){
     })
   }
 
-  // 返回数据
+  // 返回数据(数组类型)
   return ret;
 }
 
@@ -412,11 +467,21 @@ function getRadarExceptData(){
   return ret;
 }
 
-
-/**
- * 刷新雷达图
- * 雷达图有三个数据量,indicator,两个data
- */
 function freshRadarChart(){
-  myChart2.setOption()
+  if(getBarDate() && getBarDate().length>0){
+    // 数据非空才展示雷达图，echart 雷达图好像有BUG
+    
+  }
 }
+
+function freshBarChart(){
+  option && myChart.setOption(option);
+}
+
+// 显示数据
+freshBehaviorDiv();
+freshStartTime()
+freshEndTime();
+freshTodoDiv();
+freshRadarChart();
+freshBarChart();

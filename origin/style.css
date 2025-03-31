@@ -57,3 +57,9 @@ body{
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
+
+/* 完成的TODO的文本样式 */
+.strikethrough {
+    text-decoration: line-through;
+    color: #999; /* 可选：让划掉的文本变灰色 */
+}
