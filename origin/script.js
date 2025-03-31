@@ -26,13 +26,6 @@ function getVal(btn){
     btnValue = btn.value;
 }
 
-// 清空todo
-function emptyTodo(){
-  localStorage.removeItem(CONSTANTTODOLIST);
-  todoDiv.innerHTML = "";
-  showToast("清空Todo!")
-}
-
 /**
  * 增加待办事件数据保存在LS
  */
@@ -53,17 +46,16 @@ function addTodo(){
 }
 
 /**
- * 刷新TodoList
+ * 刷新 渲染 TodoList 到页面
  */
 function freshTodoDiv(){
   const array = JSON.parse(getTodoFromLS());
   // 清空原有的
   todoDiv.innerHTML = "";
-  // 显示新数据
-  // <label>
-  //    <input type="checkbox" class="todo-checkbox" onclick=click(this)> 吃饭
-  // </label>
-  // <br>
+  // 如果数据为空,退出
+  if(!array){
+    return;
+  }
   for(const item of array){
     // label
     const label = document.createElement("label");
@@ -71,6 +63,13 @@ function freshTodoDiv(){
     //  input
     const input = document.createElement("input");
     input.type='checkbox';
+    input.addEventListener('change',(e)=>{
+      if(e.target.parentElement.classList == ""){
+        e.target.parentElement.classList.add('strikethrough');
+      }else{
+        e.target.parentElement.classList.remove('strikethrough');
+      };
+    })
 
     input.classList.add('todo-checkbox');
     label.appendChild(input);
@@ -114,6 +113,13 @@ function addTodo2LS(todo){
   // 保存数据到LS
   const arrayStr = JSON.stringify(array);
   localStorage.setItem(CONSTANTTODOLIST,arrayStr);
+}
+
+// 清空todo
+function emptyTodo(){
+  localStorage.removeItem(CONSTANTTODOLIST);
+  todoDiv.innerHTML = "";
+  showToast("清空Todo!")
 }
 
 /**
