@@ -17,9 +17,9 @@
         <div class="left">
             <h5>待办 Todo</h5>
             <input type="text" placeholder="你想要做什么?" id="todo-content"> <input id='add-todo'type="button" value="增加" onclick="addTodo()">
-            <div id="gen-todo">
-                <!-- <label><input type="checkbox" class="todo-checkbox">吃饭</label><br> -->
-            </div>
+            <div id="gen-todo"></div>
+            <br>
+            <input type="button" onclick="emptyTodo()" value="清空" style="display: block; margin: 0 auto;">
 
             <h5>时间 行为</h5>
                 <button value="数学" onclick="getVal(this)">数学</button>
@@ -49,6 +49,7 @@
         <div class="right">
             <h5>总结</h5>
             <div id="chart-bar" class="chart-div"></div>
+            <br>
             <div id="chart-radar" class="chart-div"></div>
         </div>
     </div>

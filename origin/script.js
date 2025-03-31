@@ -8,12 +8,29 @@ const todoDiv = document.getElementById('gen-todo')   // todoDIV元素对象
 const behaviorDiv = document.getElementById('gen-behavior');  //behaviorDiv元素对象
 const todoInput = document.getElementById('todo-content');    //todo实际内容元素对象
 
+// 饼图
+const chartDom = document.getElementById('chart-bar');
+const myChart = echarts.init(chartDom);
+var option;
+
+// 雷达图
+var chartDOM2 = document.getElementById('chart-radar');
+var myChart2 = echarts.init(chartDOM2);
+var option2;
+
 /**
  * 获取按钮的值
  * @param {} btn 按钮对象
  */
 function getVal(btn){
     btnValue = btn.value;
+}
+
+// 清空todo
+function emptyTodo(){
+  localStorage.removeItem(CONSTANTTODOLIST);
+  todoDiv.innerHTML = "";
+  showToast("清空Todo!")
 }
 
 /**
@@ -32,7 +49,7 @@ function addTodo(){
   freshTodoDiv();
   // 清空文本
   todoInput.value="";
-  showToast(`添加Todo ${val}`);
+  showToast(`Todo  =>  ${val}`);
 }
 
 /**
@@ -44,26 +61,37 @@ function freshTodoDiv(){
   todoDiv.innerHTML = "";
   // 显示新数据
   // <label>
-  //    <input type="checkbox" class="todo-checkbox"> 吃饭
+  //    <input type="checkbox" class="todo-checkbox" onclick=click(this)> 吃饭
   // </label>
   // <br>
   for(const item of array){
     // label
     const label = document.createElement("label");
+
     //  input
     const input = document.createElement("input");
     input.type='checkbox';
+
     input.classList.add('todo-checkbox');
     label.appendChild(input);
+
     //  文本内容
     const span = document.createElement('span');
     span.innerText = item;
     label.appendChild(span);
     todoDiv.appendChild(label);
+
     // br
     const br = document.createElement('br');
     todoDiv.appendChild(br);
   }
+}
+
+// todo 多选框 点击
+function change(item){
+  alert(item.value);
+  const label = item.parentElement;
+  alert(label);
 }
 
 /**
@@ -87,18 +115,6 @@ function addTodo2LS(todo){
   const arrayStr = JSON.stringify(array);
   localStorage.setItem(CONSTANTTODOLIST,arrayStr);
 }
-
-// 监听 todo 多选框
-document.querySelectorAll('.todo-checkbox').forEach(checkbox => {
-  checkbox.addEventListener('change', function() {
-    const label = this.parentElement;
-    if (this.checked) {
-      label.classList.add('strikethrough');
-    } else {
-      label.classList.remove('strikethrough');
-    }
-  });
-});
 
 /**
  * 保存行为信息到LocalStore,并刷新行为列表
@@ -231,75 +247,70 @@ function showToast(message) {
 
 // 清空LS中的习惯数据
 function empty(){
-    localStorage.removeItem(CONSTANTBehaviorListStr);
-    freshBehaviorDiv();
-    freshBarChart();
-    freshRadarChart();
-    freshStartTime();
-    showToast("已清空!");
+  localStorage.removeItem(CONSTANTBehaviorListStr);
+  freshAll();
+  myChart2.clear(); //这里有个为解决的BUG : TODO :::::BUG 为什么数据清空后，myCharts2.setOption(option2); 会报错,清空不了(),这里直接强制把myChart2清空掉整个图层
+  showToast("已清空!"); 
 }
 
-// 饼图
-const chartDom = document.getElementById('chart-bar');
-const myChart = echarts.init(chartDom);
-var option;
-
-option = {
-    title:{
-      text:'今日时间分配',
-      subtext: getTodayDate(),
-      left:'center'
-    },
-    tooltip: {
-      trigger: 'item',
-      formatter: function(params) {
-        const minutes = (params.value) * 60;
-        const hours = params.value;
-        const percent = params.percent;
-        return `
-            ${params.name}<br/>
-            分钟数: ${minutes} 分钟<br/>
-            小时数: ${hours} 小时<br/>
-            占比: ${percent}%
-        `;
+function freshBarChart(){
+  option = {
+      title:{
+        text:'今日时间分配',
+        subtext: getTodayDate(),
+        left:'center'
       },
-    },
-    legend: {
-      orient:'vertical',
-      top: '5%',
-      left: 'left'
-    },
-    series: [
-      {
-        name: '时间分布',
-        type: 'pie',
-        radius: ['40%', '70%'],
-        avoidLabelOverlap: false,
-        itemStyle: {
-          borderRadius: 10,
-          borderColor: '#fff',
-          borderWidth: 2
+      tooltip: {
+        trigger: 'item',
+        formatter: function(params) {
+          const minutes = (params.value) * 60;
+          const hours = params.value;
+          const percent = params.percent;
+          return `
+              ${params.name}<br/>
+              分钟数: ${minutes} 分钟<br/>
+              小时数: ${hours} 小时<br/>
+              占比: ${percent}%
+          `;
         },
-        label: {
-          show: false,
-          position: 'center'
-        },
-        emphasis: {
+      },
+      legend: {
+        orient:'vertical',
+        top: '5%',
+        left: 'left'
+      },
+      series: [
+        {
+          name: '时间分布',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
           label: {
-            show: true,
-            fontSize: 40,
-            fontWeight: 'bold'
-          }
-        },
-        labelLine: {
-          show: false
-        },
-        data: getBarDate(),
-      }
-    ]
-};
-  
-option && myChart.setOption(option);
+            show: false,
+            position: 'center'
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 40,
+              fontWeight: 'bold'
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: getBarData(),
+        }
+      ]
+  };
+    
+  option && myChart.setOption(option);
+}
 
 // 获取日期
 function getTodayDate(){
@@ -307,7 +318,7 @@ function getTodayDate(){
 }
 
 // 获取饼图数据
-function getBarDate(){
+function getBarData(){
   const map = new Map();
   const data = JSON.parse(getDataFromLS());
   for(const item of data){
@@ -353,44 +364,48 @@ function timeDiff(start,end){
   return diffMinutes / 60;
 }
 
-// 雷达图
-var chartDOM2 = document.getElementById('chart-radar');
-var myChart2 = echarts.init(chartDOM2);
-var option2;
 
-option2 = {
-  title: {
-    text: 'Basic Radar Chart'
-  },
-  legend: {
-    data: ['极限', '实际时间']
-  },
-  radar: {
-    // shape: 'circle',
-    indicator: getRadarIndicator(),
-  },
-  series: [
-    {
-      name: '极限时间 vs 实际时间',
-      type: 'radar',
-      data: [
-        {
-          value: getRadarExceptData(),
-          name: '极限'
-        },
-        {
-          value: getRadarActuallData(),
-          name: '实际时间'
-        }
-      ]
-    }
-  ]
-};
+
+function freshRadarChart(){
+  option2 = {
+    title: {
+      text: '时间分配雷达图'
+    },
+    legend: {
+      data: ['极限', '实际时间']
+    },
+    radar: {
+      // shape: 'circle',
+      indicator: getRadarIndicator(),
+    },
+    series: [
+      {
+        name: '极限时间 vs 实际时间',
+        type: 'radar',
+        data: [
+          {
+            value: getRadarExceptData(),
+            name: '极限'
+          },
+          {
+            value: getRadarActuallData(),
+            name: '实际时间'
+          }
+        ]
+      }
+    ]
+  };
+
+  // 刷新
+  if(getBarData().length > 0){
+    option2 && myChart2.setOption(option2);
+  }
+}
 
 
 // 获取雷达图的最大值
 function radarMax(){
-  data = getBarDate();
+  data = getBarData();
   let max = 0;
 
   // 没有数据就返回0
@@ -404,7 +419,7 @@ function radarMax(){
       max = item['value'];
     }
   }
-  return max;
+  return parseFloat(max).toFixed(2);
 }
 
 // 获取雷达图的指标信息
@@ -412,15 +427,16 @@ function radarMax(){
 function getRadarIndicator(){
   const ret = [];
   // 获取 {name:"",value:""};
-  data = getBarDate();
-  if(!data){
+  data = getBarData();
+  if(!data||data.length == 0){
     return ret;
   }
+
   // 最大值 max, 设置为已有行为的最大值
   for(const item of data){
     ret.push({
       name:item['name'],
-      max:radarMax()
+      max: parseFloat(radarMax()).toFixed(2),
     })
   }
 
@@ -431,7 +447,7 @@ function getRadarIndicator(){
 // 雷达-实际数据
 function getRadarActuallData(){
   // 获取 {name:"" ,value:100}
-  data = getBarDate();
+  data = getBarData();
   // 
   let ret= [];
   if(!data){
@@ -467,21 +483,14 @@ function getRadarExceptData(){
   return ret;
 }
 
-function freshRadarChart(){
-  if(getBarDate() && getBarDate().length>0){
-    // 数据非空才展示雷达图，echart 雷达图好像有BUG
-    
-  }
-}
-
-function freshBarChart(){
-  option && myChart.setOption(option);
+function freshAll(){
+  freshBarChart();
+  freshBehaviorDiv();
+  freshEndTime();
+  freshStartTime();
+  freshRadarChart();
+  freshTodoDiv();
 }
 
 // 显示数据
-freshBehaviorDiv();
-freshStartTime()
-freshEndTime();
-freshTodoDiv();
-freshRadarChart();
-freshBarChart();
+freshAll();
