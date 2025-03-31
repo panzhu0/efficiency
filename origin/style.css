@@ -1,35 +1,36 @@
-body {
-  color: #253331;
-  margin: 0;
-  padding: 0;
-}
-
-.completed {
-    text-decoration: line-through;
-    color: #999; /* 可选：添加灰色使完成项更明显 */
+/* 基础样式设置 */
+body{
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    /* background: #1f242d; */
+    /* color:#fff; */
+    /* background: #949597; */
+    color:#8a4c4c;
 }
 
 .container{
-  overflow: hidden;
-  width: 1050px;
-  margin: 0 auto;
+    overflow: hidden;
+    width: 1050px;
+    margin: 0 auto;
 }
 
 .left{
-  float: left;
-  width: 250px; /* 必须指定宽度 */
-  margin: 0 auto; /* 左右宽度自动，上下填满 */
+    float: left;
+    width: 250px;
+    margin: 0 auto;
 }
 
 .right{
-  float: right;
-  width: 600px;
-  margin: 0 auto;
+    float: right;
+    width: 650px;
+    margin: 0 auto;
 }
 
+/* 浮动Toast功能 */
 .toast {
     position: fixed;
-    top: 20px;
+    top: 90px;
     left: 50%;
     transform: translateX(-50%);
     background-color: #6d8d65;
@@ -40,17 +41,18 @@ body {
     opacity: 0;
     transition: opacity 0.3s;
     z-index: 1000;
-  }
-  
-  .toast.show {
+}
+.toast.show {
     opacity: 1;
-  }
 
-.summary,.behaviorChar{
+}
+
+/* 图表的DIV 的样式表*/
+.char_div{
     width: 600px;
     height: 400px;
     margin: 30px auto;
     border: 1px solid #eee;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
-  }
+}
