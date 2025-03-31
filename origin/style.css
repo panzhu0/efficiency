@@ -48,10 +48,11 @@ body{
 }
 
 /* 图表的DIV 的样式表*/
-.char_div{
+.chart-div{
     width: 600px;
     height: 400px;
-    margin: 30px auto;
+    margin: 0px auto;
+    padding: 0px auto;
     border: 1px solid #eee;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);

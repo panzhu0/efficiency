@@ -1,24 +1,24 @@
 // 全局变量
-let btn_value; //按钮的值
-const CONSTANT_BehaviorListStr = "BEHAVIORLIST"; // LS 常量名
-const div = document.getElementById('gen_behavior');  // 获取div
-const start = document.getElementById('start_time'); // 开始时间选择器
-const end = document.getElementById('end_time'); // 开始时间选择器
+let btnValue; //按钮的值
+const CONSTANTBehaviorListStr = "BEHAVIORLIST"; // LS 常量名
+const div = document.getElementById('gen-behavior');  // 获取div
+const start = document.getElementById('start-time'); // 开始时间选择器
+const end = document.getElementById('end-time'); // 开始时间选择器
 
 /**
  * 获取按钮的值
  * @param {} btn 按钮对象
  */
 function getVal(btn){
-    btn_value = btn.value;
+    btnValue = btn.value;
 }
 
 /**
  * 保存行为信息到LocalStore,并刷新行为列表
  */
-function save_behavior(){
+function saveBehavior(){
     // 更新LocalStore
-    if(!btn_value || !start.value || !end.value){
+    if(!btnValue || !start.value || !end.value){
         //数据不够就提示错误，并退出
         showToast("错误,数据不够!");
         return;
@@ -27,7 +27,7 @@ function save_behavior(){
     // JSON数组
     const jsObj = {
         //行为
-        behavior : btn_value,
+        behavior : btnValue,
         //起始时间
         startTime : start.value,
         //结束时间
@@ -35,20 +35,20 @@ function save_behavior(){
     }
 
     // 对象数组增加要给数据并返回
-    local_store_behavior_add(jsObj); 
+    localStoreBehaviorAdd(jsObj); 
 
     // 刷新对应数据
-    fresh_behavior_div(); //无序列表
-    fresh_bar_chart();    //饼图
-    fresh_radar_chart();  //雷达图
-    fresh_start_time();   //开始时间
-    fresh_end_time();     //结束时间
+    freshBehaviorDiv(); //无序列表
+    freshBarChart();    //饼图
+    freshRadarChart();  //雷达图
+    freshStartTime();   //开始时间
+    freshEndTime();     //结束时间
 }
 
 /**
  * 向LocalStore 的behaviorList 增加一个JSON对象数据
  */
-function local_store_behavior_add(jsObj){
+function localStoreBehaviorAdd(jsObj){
     // 1. 从LS 获取数据(字符串 => JSON数组)
     let array = JSON.parse(getDataFromLS());
 
@@ -57,13 +57,13 @@ function local_store_behavior_add(jsObj){
 
     // 3. 写回到LS(JSON数组 => 字符串)
     const arrayStr = JSON.stringify(array);
-    localStorage.setItem(CONSTANT_BehaviorListStr,arrayStr);
+    localStorage.setItem(CONSTANTBehaviorListStr,arrayStr);
 }
 
 /**
  * 从LocalStorage 获取数据 并刷新生成 无序列表
  */
-function fresh_behavior_div(){
+function freshBehaviorDiv(){
     // 清空原有数据
     div.innerHTML = "";
 
@@ -87,7 +87,7 @@ function fresh_behavior_div(){
 /**
  * 刷新 开启时间选择框
  */
-function fresh_start_time(){
+function freshStartTime(){
     // 值为最后一个已完成项目的结束时间
     jsObjArray = JSON.parse(getDataFromLS());
     let end;
@@ -105,14 +105,14 @@ function fresh_start_time(){
 /**
  * 刷新 结束时间选择框
  */
-function fresh_end_time(){
+function freshEndTime(){
     // 默认设置为当前时间
     end.value = currentTime();
 }
 
-fresh_behavior_div();
-fresh_start_time()
-fresh_end_time();
+freshBehaviorDiv();
+freshStartTime()
+freshEndTime();
 
 /**
  * 获取当前时间
@@ -127,7 +127,7 @@ function currentTime(){
  * @returns {behavior:"",startTime:"",endTime:""} 数据为[JSON数组列表] 的 字符串
  */
 function getDataFromLS(){
-    const dataStr = localStorage.getItem(CONSTANT_BehaviorListStr) || [];   //JSON数组 字符串形式
+    const dataStr = localStorage.getItem(CONSTANTBehaviorListStr) || [];   //JSON数组 字符串形式
     if(dataStr == ""){
         return "[]";
     }
@@ -147,19 +147,19 @@ function showToast(message) {
 }
 
 // 刷新行为列表
-// sh_behavior_div();
+// shBehaviorDiv();
 
 // 清空LS中的习惯数据
 function empty(){
-    localStorage.removeItem(CONSTANT_BehaviorListStr);
-    fresh_behavior_div();
-    fresh_bar_chart();
-    fresh_start_time();
+    localStorage.removeItem(CONSTANTBehaviorListStr);
+    freshBehaviorDiv();
+    freshBarChart();
+    freshStartTime();
     showToast("已清空!");
 }
 
 // 饼图
-const chartDom = document.getElementById('char_bar');
+const chartDom = document.getElementById('chart-bar');
 const myChart = echarts.init(chartDom);
 var option;
 
@@ -274,14 +274,14 @@ function timeDiff(start,end){
 
 
 // 刷新饼图
-function fresh_bar_chart(){
+function freshBarChart(){
   myChart.setOption({
     series: [{ data: getBarDate()}]
   });
 }
 
 // 雷达图
-var charDOM2 = document.getElementById('char_radar');
+var charDOM2 = document.getElementById('chart-radar');
 var myChart2 = echarts.init(charDOM2);
 var option2;
 
@@ -299,31 +299,32 @@ option2 = {
     // 标签
     legend: {
       data: ['极限时间分配', '实际时间分配'],
+      left: 'right'
     },
     // 雷达图指标
     radar: {
       // shape: 'circle',
-      indicator: radar_indicator(),
+      indicator: getRadarIndicator(),
     },
     series: [
       {
         name: 'Budget vs spending',
         type: 'radar',
         data: [
-          {
-            name: '极限时间分配',
-            value: radar_except_data(),
-          },
+          // {
+          //   name: '极限时间分配',
+          //   value: getRadarExceptData(),
+          // },
           {
             name: '实际时间分配',
-            value:radar_actuall_data(),
+            value:getRadarActuallData(),
             label:{
               show: true,
               position: 'top', // 标签位置（'top'/'left'/'right'/'bottom'）
               formatter: '{c}' // 显示数据值（{a}系列名, {b}维度名, {c}数值）
             },
             // 区域样式
-            areaStyle: { opacity: 0.8 }
+            areaStyle: { opacity: 0.7 }
           }
         ]
       }
@@ -333,7 +334,7 @@ option2 = {
 option2 && myChart2.setOption(option2);
 
 // 获取雷达图的最大值
-function radar_max(){
+function radarMax(){
   data = getBarDate();
   let max = 0;
 
@@ -353,54 +354,69 @@ function radar_max(){
 
 // 获取雷达图的指标信息
 // 格式:  {name:"",max:};
-function radar_indicator(){
+function getRadarIndicator(){
   const ret = [];
+  // 获取 {name:"",value:""};
   data = getBarDate();
   if(!data){
     return ret;
   }
+  // 最大值 max, 设置为已有行为的最大值
   for(const item of data){
     ret.push({
       name:item['name'],
-      max:radar_max()
+      max:radarMax()
     })
   }
 
-  // 遍历
+  // 返回数据
   return ret;
 }
 
 // 雷达-实际数据
-function radar_actuall_data(){
+function getRadarActuallData(){
+  // 获取 {name:"" ,value:100}
   data = getBarDate();
+  // 
   let ret= [];
   if(!data){
+    // 如果没有数据需要显示，直接返回
     return ret; 
   }
+  // 从数据数组中获取值,只保留小数点后两位
   for(const v of data){
     ret.push(
       parseFloat(v['value'].toFixed(2))
     ); //值 只保留后两位
   }
+  // 返回
   return ret;
 }
 
 // 雷达-预期数据
-function radar_except_data(){
-  const data = JSON.parse(localStorage.getItem(CONSTANT_BehaviorListStr));
-  const val = [];
+function getRadarExceptData(){
+  // 获取 {name:"",value:100}
+  const data = JSON.parse(localStorage.getItem(CONSTANTBehaviorListStr));
+  const ret = [];
   if(!data){
+    // 如果数据数组中没有数据,直接返回
     return undefined;
   }
 
-  for(const v of data){
-    val.push(radar_max());
+  // 预期数据这里设置为,当前所有行为中，最大已经完成的行为的时长
+  const max = radarMax();
+  for(const item of data){
+    ret.push(max);
   }
-  return val;
+  // 返回
+  return ret;
 }
 
 
-// 更新雷达图
-function fresh_radar_chart(){
-  myChart2.setOption(option2);
+/**
+ * 刷新雷达图
+ * 雷达图有三个数据量,indicator,两个data
+ */
+function freshRadarChart(){
+  myChart2.setOption()
 }

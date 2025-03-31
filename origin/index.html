@@ -17,7 +17,7 @@
         <div class="left">
             <h5>待办 Todo</h5>
             <input type="text" placeholder="你想要做什么?"> <input type="button" value="增加" onclick="add_todo()">
-            <div id="gen_todo"></div>
+            <div id="gen-todo"></div>
 
             <h5>时间 行为</h5>
                 <button value="数学" onclick="getVal(this)">数学</button>
@@ -31,23 +31,23 @@
 
             <!-- 开始时间 - 结束时间 -->
             开始时间:
-            <input type="time" id="start_time"><br>
+            <input type="time" id="start-time"><br>
             结束时间:
-            <input type="time" id="end_time"><br><br>
+            <input type="time" id="end-time"><br><br>
             <button style="display: block; margin: 0 auto;" onclick="save_behavior()">确定</button>
 
             <!-- 行为 -->
             <h5>Behavior List 行为记录</h5>
             <!-- 用于放置动态生成的行为列表 -->
-            <div id="gen_behavior"></div>
+            <div id="gen-behavior"></div>
             <button style="display: block; margin: 0 auto;" onclick="empty()">清空</button>
         </div>
 
         <!-- 右侧面板 -->
         <div class="right">
             <h5>总结</h5>
-            <div id="char_bar" class="char_div"></div>
-            <div id="char_radar" class="char_div"></div>
+            <div id="chart-bar" class="chart-div"></div>
+            <div id="chart-radar" class="chart-div"></div>
         </div>
     </div>
     <!-- 浮动Toast功能 -->
