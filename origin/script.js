@@ -62,7 +62,7 @@ function freshTodoDiv(){
 
     //  input
     const input = document.createElement("input");
-    input.type='checkbox';
+    input.type='checkbox'
     input.addEventListener('change',(e)=>{
       if(e.target.parentElement.classList == ""){
         e.target.parentElement.classList.add('strikethrough');
