@@ -64,18 +64,14 @@ function freshTodoDiv(){
     const input = document.createElement("input");
     input.type='checkbox'
     input.addEventListener('change',(e)=>{
-      if(e.target.parentElement.classList == ""){
-        e.target.parentElement.classList.add('strikethrough');
-        // Label -> 
-        const val = e.target.parentElement.querySelector('span').textContent;
-        e.target.parentElement.style.transition = 'opacity 3s ease';
-        e.target.parentElement.style='opacity 0';
-        //动画
-        setTimeout(()=>{
-          e.target.parentElement.remove();
-        },5000) //5s 后删除
+      const checkboxObj = e.target;
+      const labelObj =e.target.parentElement;    //Label 标签对象
+      const val = labelObj.querySelector('span').textContent;
+
+      if(checkboxObj.checked){
+        labelObj.classList.add('strikethrough');
       }else{
-        e.target.parentElement.classList.remove('strikethrough');
+        labelObj.classList.remove('strikethrough');
       };
     })
 
@@ -92,13 +88,6 @@ function freshTodoDiv(){
     const br = document.createElement('br');
     todoDiv.appendChild(br);
   }
-}
-
-// todo 多选框 点击
-function change(item){
-  alert(item.value);
-  const label = item.parentElement;
-  alert(label);
 }
 
 /**
