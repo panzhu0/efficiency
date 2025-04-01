@@ -66,6 +66,14 @@ function freshTodoDiv(){
     input.addEventListener('change',(e)=>{
       if(e.target.parentElement.classList == ""){
         e.target.parentElement.classList.add('strikethrough');
+        // Label -> 
+        const val = e.target.parentElement.querySelector('span').textContent;
+        e.target.parentElement.style.transition = 'opacity 3s ease';
+        e.target.parentElement.style='opacity 0';
+        //动画
+        setTimeout(()=>{
+          e.target.parentElement.remove();
+        },5000) //5s 后删除
       }else{
         e.target.parentElement.classList.remove('strikethrough');
       };
@@ -264,7 +272,7 @@ function freshBarChart(){
       title:{
         text:'今日时间分配',
         subtext: getTodayDate(),
-        left:'center'
+        left:'left'
       },
       tooltip: {
         trigger: 'item',
@@ -274,8 +282,8 @@ function freshBarChart(){
           const percent = params.percent;
           return `
               ${params.name}<br/>
-              分钟数: ${minutes} 分钟<br/>
-              小时数: ${hours} 小时<br/>
+              分钟数: ${parseFloat(minutes).toFixed(2)} 分钟<br/>
+              小时数: ${parseFloat(hours).toFixed(2)} 小时<br/>
               占比: ${percent}%
           `;
         },
@@ -283,7 +291,7 @@ function freshBarChart(){
       legend: {
         orient:'vertical',
         top: '5%',
-        left: 'left'
+        left: 'right'
       },
       series: [
         {
@@ -297,18 +305,26 @@ function freshBarChart(){
             borderWidth: 2
           },
           label: {
-            show: false,
-            position: 'center'
+            show: true,
+            position: 'outside',  // 标签显示在扇形外侧
+            alignTo: '',  // 标签对齐边缘
+            formatter: function(param){
+              return `${param.name} : ${parseFloat(param.value).toFixed(2)} 小时`
+            },
+            margin: 0  // 标签与饼图的距离
           },
           emphasis: {
             label: {
               show: true,
-              fontSize: 40,
+              fontSize: 35,
+              formatter: function(param){
+                return `${param.name} ${parseFloat(param.value).toFixed(1)}`
+              },
               fontWeight: 'bold'
             }
           },
           labelLine: {
-            show: false
+            show: true 
           },
           data: getBarData(),
         }
@@ -388,6 +404,7 @@ function freshRadarChart(){
       {
         name: '极限时间 vs 实际时间',
         type: 'radar',
+
         data: [
           {
             value: getRadarExceptData(),
@@ -395,7 +412,15 @@ function freshRadarChart(){
           },
           {
             value: getRadarActuallData(),
-            name: '实际时间'
+            name: '实际时间',
+            label: {
+              show: true,
+              position: 'left',
+              color: '#000',
+              fontSize: 14,
+              fontWeight: 'bold',
+              formatter: '{c}'  // {c} 表示数据值
+            },
           }
         ]
       }
