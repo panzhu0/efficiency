@@ -1,3 +1,4 @@
+
 // 全局变量
 let btnValue; //按钮的值
 const CONSTANTBehaviorListStr = "BEHAVIORLIST";       // LS BEHAVIOR 常量名
@@ -46,6 +47,8 @@ function addTodo(){
 
   // 刷新TODO DIV的内容
   freshTodoDiv();
+  addEventListener2Todo();
+
   // 清空文本
   todoInput.value="";
 }
@@ -305,7 +308,7 @@ function showToast(message) {
 // 清空LS中的习惯数据
 function empty(){
   localStorage.removeItem(CONSTANTBehaviorListStr);
-  freshAllExceptTodo();
+  freshAll();
   myChart2.clear(); //这里有个为解决的BUG : TODO :::::BUG 为什么数据清空后，myCharts2.setOption(option2); 会报错,清空不了(),这里直接强制把myChart2清空掉整个图层
   showToast("已清空!"); 
 }
