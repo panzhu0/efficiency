@@ -34,12 +34,38 @@ function addTodo(){
     showToast("请输入TODO内容");
     return;
   }
-  // 获取TODO的文本信息
-  const val = todoInput.value;
+
+  // 获取TODO的文本信息 JSON{ 'todo内容' , 点击状态【0:未点击,1点击】};
+  const jsObj = {
+    todoVal: todoInput.value,
+    state: false,
+  };
+
   // 将TODO加入到LS数组
-  addTodo2LS(val);
+  addTodo2LS(jsObj);
+
   // 刷新TODO DIV的内容
   freshTodoDiv();
+
+  // 监听-> 多选框点击事件
+  const checkboxes = document.querySelectorAll('.todo-checkbox')
+  for(const checkbox of checkboxes){
+    checkbox.addEventListener('change',(e)=>{
+      const checkboxObj = e.target;
+      const labelObj =e.target.parentElement;    //Label 标签对象
+      const val = labelObj.querySelector('span').textContent;
+
+      // 如果点击了多选框,设置样式，同时将点击状态更新到LS
+      if(checkboxObj.checked){
+        labelObj.classList.add('strikethrough');
+        setTodoState2LS(val,true);
+      }else{
+        labelObj.classList.remove('strikethrough');
+        setTodoState2LS(val,false); 
+      };
+    })
+  }
+  
   // 清空文本
   todoInput.value="";
   showToast(`Todo  =>  ${val}`);
@@ -49,6 +75,7 @@ function addTodo(){
  * 刷新 渲染 TodoList 到页面
  */
 function freshTodoDiv(){
+  // 从LS加载数据
   const array = JSON.parse(getTodoFromLS());
   // 清空原有的
   todoDiv.innerHTML = "";
@@ -56,6 +83,7 @@ function freshTodoDiv(){
   if(!array){
     return;
   }
+
   for(const item of array){
     // label
     const label = document.createElement("label");
@@ -63,24 +91,19 @@ function freshTodoDiv(){
     //  input
     const input = document.createElement("input");
     input.type='checkbox'
-    input.addEventListener('change',(e)=>{
-      const checkboxObj = e.target;
-      const labelObj =e.target.parentElement;    //Label 标签对象
-      const val = labelObj.querySelector('span').textContent;
-
-      if(checkboxObj.checked){
-        labelObj.classList.add('strikethrough');
-      }else{
-        labelObj.classList.remove('strikethrough');
-      };
-    })
+    if(item['state'] == true){
+      label.classList.add("strikethrough");
+      input.checked=true;
+    }else{
+      input.checked=false;
+    }
 
     input.classList.add('todo-checkbox');
     label.appendChild(input);
 
     //  文本内容
     const span = document.createElement('span');
-    span.innerText = item;
+    span.innerText = item['todoVal'];
     label.appendChild(span);
     todoDiv.appendChild(label);
 
@@ -88,6 +111,28 @@ function freshTodoDiv(){
     const br = document.createElement('br');
     todoDiv.appendChild(br);
   }
+}
+
+/**
+ * 设置Todo项目的点击状态,保存到LS中
+ * @param {Todo内容} val 
+ * @param {点击状态} status 
+ */
+function setTodoState2LS(val,status){
+  // 获取原有数据
+  data = JSON.parse(getTodoFromLS());
+  newArray = [];
+
+  // 遍历 LS-todo,将选中的多选框的 选中状态置反
+  for(const item of data){
+    if(item['todoVal'] == val){
+      item['state'] = !item['state'];
+    }
+    newArray.push(item);
+  }
+
+  // 清空原有LS中的 TODO 数据
+  localStorage.setItem(CONSTANTTODOLIST,JSON.stringify(newArray));
 }
 
 /**
@@ -106,6 +151,8 @@ function addTodo2LS(todo){
 
   // 增加todo到数组
   array.push(todo);
+
+
 
   // 保存数据到LS
   const arrayStr = JSON.stringify(array);
