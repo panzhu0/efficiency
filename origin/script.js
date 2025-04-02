@@ -41,13 +41,6 @@ function addTodo(){
     state: false,
   };
 
-
-  // 获取TODO的文本信息 JSON{ 'todo内容' , 点击状态【0:未点击,1点击】};
-  const jsObj = {
-    todoVal: todoInput.value,
-    state: false,
-  };
-
   // 将TODO加入到LS数组
   addTodo2LS(jsObj);
 
@@ -118,6 +111,14 @@ function freshTodoDiv(){
     todoDiv.appendChild(br);
   }
 }
+
+// 监听输入框的 Enter 按键
+todoInput.addEventListener("keydown", function(event) {
+  if (event.key === "Enter" || event.keyCode === 13) {
+      event.preventDefault(); // 防止表单提交（如果有 form）
+      addTodo(); // 触发按钮的点击事件
+  }
+});
 
 /**
  * 设置Todo项目的点击状态,保存到LS中
@@ -304,7 +305,7 @@ function showToast(message) {
 // 清空LS中的习惯数据
 function empty(){
   localStorage.removeItem(CONSTANTBehaviorListStr);
-  freshAll();
+  freshAllExceptTodo();
   myChart2.clear(); //这里有个为解决的BUG : TODO :::::BUG 为什么数据清空后，myCharts2.setOption(option2); 会报错,清空不了(),这里直接强制把myChart2清空掉整个图层
   showToast("已清空!"); 
 }
