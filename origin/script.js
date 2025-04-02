@@ -41,17 +41,18 @@ function addTodo(){
     state: false,
   };
 
+
+  // 获取TODO的文本信息 JSON{ 'todo内容' , 点击状态【0:未点击,1点击】};
+  const jsObj = {
+    todoVal: todoInput.value,
+    state: false,
+  };
+
   // 将TODO加入到LS数组
   addTodo2LS(jsObj);
 
   // 刷新TODO DIV的内容
   freshTodoDiv();
-
-  // 监听-> 多选框点击事件
-  addEventListener2Todo();
-  
-  showToast(`Todo  =>  ${todoInput.value}`);
-
   // 清空文本
   todoInput.value="";
 }
