@@ -48,6 +48,15 @@ function addTodo(){
   freshTodoDiv();
 
   // 监听-> 多选框点击事件
+  addEventListener2Todo();
+  
+  showToast(`Todo  =>  ${todoInput.value}`);
+
+  // 清空文本
+  todoInput.value="";
+}
+
+function addEventListener2Todo(){
   const checkboxes = document.querySelectorAll('.todo-checkbox')
   for(const checkbox of checkboxes){
     checkbox.addEventListener('change',(e)=>{
@@ -65,10 +74,6 @@ function addTodo(){
       };
     })
   }
-  
-  // 清空文本
-  todoInput.value="";
-  showToast(`Todo  =>  ${val}`);
 }
 
 /**
@@ -557,6 +562,7 @@ function freshAll(){
   freshStartTime();
   freshRadarChart();
   freshTodoDiv();
+  addEventListener2Todo();
 }
 
 // 显示数据
