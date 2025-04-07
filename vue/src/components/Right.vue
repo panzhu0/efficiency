@@ -1,5 +1,3 @@
 <template>
-    <h1>Right -- </h1>
+    <h1 style="text-align: center;">Right</h1>
 </template>
-<script></script>
-<style></style>
