@@ -8,5 +8,29 @@
 </template>
 
 <script>
+    import * as echarts from 'echarts';
+    import { onMounted } from 'vue';
+
+    export default{
+        setup(){
+            onMounted(()=>{
+                // 将饼图数据、雷达图数据渲染到页面
+            })
+            // 获取饼图数据
+            // 获取雷达图数据
+        }
+    }
 </script>
-<style></style>
+<style>
+/* 饼图 */
+#bar{
+    width: 500px;
+    height: 600px;
+}
+
+/* 雷达图 */
+#radar{
+    width: 500px;
+    height: 600px;
+}
+</style>
