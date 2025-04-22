@@ -8,8 +8,11 @@
 </template>
 
 <script>
-    import * as echarts from 'echarts';
     import { onMounted } from 'vue';
+    import { reactive,watchEffect } from 'vue';
+    
+    const TODOLIST ="TODOLIST";
+    const BEHAVIORLIST ="BEHAVIORLIST";
 
     export default{
         setup(){
@@ -18,6 +21,27 @@
             })
             // 获取饼图数据
             // 获取雷达图数据
+            // 使用LS
+            let behaviors = useLS(BEHAVIORLIST,[])
+            alert(behaviors)
+
+            function useLS(key, defaultValue) {
+                // 从 localStorage 读取初始值或使用默认值
+                const initialValue = localStorage.getItem(key)
+                    ? JSON.parse(localStorage.getItem(key))
+                    : defaultValue
+                
+                // 创建响应式引用
+                const data = reactive(initialValue)
+                
+                // 使用 watchEffect 自动同步到 localStorage
+                watchEffect(() => {
+                    localStorage.setItem(key, JSON.stringify(data))
+                })
+
+                return data
+            }
+            return {behaviors,todos}
         }
     }
 </script>
