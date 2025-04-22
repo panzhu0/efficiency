@@ -2,7 +2,5 @@
     <h5>Charts</h5>
 </template>
 <script>
-export default{
-
-}
+export default{}
 </script>
