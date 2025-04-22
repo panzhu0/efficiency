@@ -11,45 +11,85 @@
     import { reactive,watchEffect,onMounted,ref,onBeforeUnmount, computed  } from 'vue';
     import * as echarts from 'echarts';
     
-    const TODOLIST ="TODOLIST";
-    const BEHAVIORLIST ="BEHAVIORLIST";
+    const BEHAVIORLIST ="BEHAVIORLIST"
 
     export default{
         setup(){
-            let pieChart = null;
-            let radarChart = null;
+            let pieChart = null
             onMounted(()=>{
-                const pie = ref(document.getElementById('pie'))
-                // 1.初始化饼图
-                pieChart = echarts.init(pie.value)
-                // 2.设置饼图配置
+            const pieDiv = ref(document.getElementById('pie'));
+                pieChart = echarts.init(pieDiv.value)
                 const pieOption = {
-                    title: {
-                        text: 'Vue 3 中使用 ECharts'
+                    title:{
+                        text:'今日时间分配',
+                        subtext: getTodayDate(),
+                        left:'left'
                     },
-                    tooltip: {},
-                    xAxis: {
-                        data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: function(params) {
+                        const minutes = (params.value) * 60;
+                        const hours = params.value;
+                        const percent = params.percent;
+                        return `
+                            ${params.name}<br/>
+                            分钟数: ${parseFloat(minutes).toFixed(2)} 分钟<br/>
+                            小时数: ${parseFloat(hours).toFixed(2)} 小时<br/>
+                            占比: ${percent}%
+                        `;
+                        },
                     },
-                    yAxis: {},
-                    series: [
+                    legend: {
+                        orient:'vertical',
+                        top: '5%',
+                        left: 'right'
+                    },
+                    series: 
+                    [
                         {
-                            name: '销量',
-                            type: 'pie',
-                            data: [5, 20, 36, 10, 10, 20]
+                        name: '时间分布',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: true,
+                            position: 'outside',  // 标签显示在扇形外侧
+                            alignTo: '',  // 标签对齐边缘
+                            formatter: function(param){
+                            return `${param.name} : ${parseFloat(param.value).toFixed(2)} 小时`
+                            },
+                            margin: 0  // 标签与饼图的距离
+                        },
+                        emphasis: {
+                            label: {
+                            show: true,
+                            fontSize: 35,
+                            formatter: function(param){
+                                return `${param.name} ${parseFloat(param.value).toFixed(1)}`
+                            },
+                            fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: true 
+                        },
+                        data: pieData.value,
                         }
                     ]
                 };
-                // 3.应用配置
                 pieChart.setOption(pieOption)
-                // 4.响应式调整
+                // 响应式更新
                 window.addEventListener('resize',function(){
                     pieChart.resize()
                 })
 
-
-                const radar = ref(document.getElementById('radar'))
             })
+
             onBeforeUnmount(()=>{
                 // 组件卸载时销毁图表
                 if(pieChart){
@@ -79,21 +119,38 @@
                 return data
             }
             // 解析LS中的行为数据，转换为Pie图能接受的形式
+
             // pie类型数据
-            let pieData = computed(()=>{
-                for(let i=0;i<behaviors.length;i++){
-                    let m = new Map()
-                    // 获取当前行为的时间
-                    let [h_s,m_s] = behaviors[i]['start'].split(':').map(Number)
-                    let [h_e,m_e] = behaviors[i]['end'].split(':').map(Number)
-                    let duration = h_e * 60 + m_e -  h_s*60 - m_s  //单位分钟
-                    alert(duration)
+            const pieData = computed(() => {
+                const m = new Map();
+                for(let i =0;i<behaviors.length;i++){
+                    const [h_s, m_s] = behaviors[i].start.split(':').map(Number);
+                    const [h_e, m_e] = behaviors[i].end.split(':').map(Number);
+                    const duration = h_e*60+m_e - h_s*60 - m_s
+                    // alert(behaviors[i]['behavior'])
+                    // alert(duration)
                     m.set(
-                        behaviors[i]['name'],                       //Key
-                        duration + m.get(behaviors[i]['name']))     //Value
+                        behaviors[i]['behavior'],
+                        duration + (m.get(behaviors[i]['behavior'])||0)
+                    )
+                    // alert("=>"+m.get(behaviors[i]['behavior']))
                 }
-                return m;
-            })
+                var obj = []
+                for(const [k,v] of m){
+                    obj.push({
+                        'value':v/60,
+                        'name':k
+                    })
+                }
+                return obj
+            });
+
+            function getTodayDate(){
+                const d = new Date()
+                return d.toLocaleDateString()
+            }
+
+            alert(JSON.stringify(pieData.value)) //pieData 惰性访问
             return {behaviors,pieChart,pieData}
         }
     }
@@ -101,13 +158,13 @@
 <style>
 /* 饼图 */
 #pie{
-    width: 500px;
+    width: 900px;
     height: 600px;
 }
 
 /* 雷达图 */
 #radar{
-    width: 500px;
+    width: 900px;
     height: 600px;
 }
 </style>
