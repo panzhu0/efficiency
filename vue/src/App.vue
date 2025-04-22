@@ -12,9 +12,6 @@
     import Left from "@/components/Left.vue"
     import Right from '@/components/Right.vue'
 
-    const TODOLIST ="TODOLIST";
-    const BEHAVIORLIST ="BEHAVIORLIST";
-
     export default{
         // 部件
         name : 'App',
