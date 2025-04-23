@@ -4,9 +4,15 @@
     <input type="text" v-model="todo" placeholder="Input Todo" @keyup.enter="addTodo">
     <input type="button" value="Add" @click="addTodo"><br>
     <ul>
-        <li v-for="(item) of todos" v-bind:key=todos>{{ item }}</li>
+        <li 
+            v-for="(item,index) of todos" v-bind:key=todos>{{ item }}
+            <input type="button" @click="rT(index)" value="DEL" class="del-btn-to">
+        </li> 
     </ul>
-    <input type="button" value="Clear" class="btn" @click="clearTodo"><br><br><br>
+    <br>
+
+    <input type="button"  v-show="todos.length>0" value="Clear" 
+    class="btn" @click="clearTodo"><br><br><br>
 
     <!-- 时间 -->
 
@@ -16,16 +22,19 @@
     Start:&nbsp;<input type="time" v-model="start"><br>
     End:&nbsp;&nbsp;&nbsp;<input type="time" v-model="end"><br>
     <ul>
-        <li v-for="(item) of behaviors" v-bind:key="behaviors">
-            {{ item['start'] }} -> {{ item['end'] }} : {{ item['behavior'] }}
+        <li v-for="(item,index) of behaviors" v-bind:key="behaviors">
+            {{ item['start'] }} -> {{ item['end'] }} &nbsp; BEHABIOR : {{ item['behavior'] }} 
+            <input type="button" value="DEL" @click="rB(index)" class="del-btn-behavior">
         </li>
     </ul>
-    <input type="button" value="Clear" class="btn" @click="clearBehavior"><br><br><br>
+    <br>
+
+    <input type="button" value="Clear" class="btn" v-show="behaviors.length>0" @click="clearBehavior"><br><br><br>
 
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useLS } from '@/composables/useLS';
 
 const TODOS = 'todos'
@@ -42,10 +51,9 @@ export default{
         }
 
         const addBehavior =()=>{ 
-            // if(!start.value||!end.value){
-            //     return
-            // }
-            alert(start.value)
+            if(!start.value||!end.value){
+                return
+            }
             const obj = {
                 "behavior" : behavior.value,
                 'start' : start.value,
@@ -62,9 +70,24 @@ export default{
             behaviors.value = []
         }
 
+        const rB=(index)=>{
+            behaviors.value.splice(index,1)
+        }
+
+        const rT=(index)=>{
+            todos.value.splice(index,1)
+        }
+
         const todos = useLS(TODOS,[])
         const behaviors = useLS(BEHAVIORS,[])
-        return {todo,behavior,behaviors,todos,addTodo,addBehavior,clearTodo,clearBehavior,start,end}
+
+        watch(behaviors.value,(n,o)=>{
+            // 更新start,end的值
+            for(let i =0;i<n.values.length;i++){
+
+            }
+        })
+        return {todo,behavior,behaviors,todos,addTodo,addBehavior,clearTodo,clearBehavior,rB,rT,start,end}
     }
 }
 </script>
@@ -77,5 +100,18 @@ input{
     margin: 0px 100px;
 }
 
+.del-btn-to {
+  position: absolute;
+  right: 65%;
+  /* top: 50%; */
+  /* transform: translateY(-10%); 垂直居中 */
+}
+
+.del-btn-behavior {
+  position: absolute;
+  right: 56%;
+  /* top: 50%; */
+  /* transform: translateY(-10%); 垂直居中 */
+}
 
 </style>

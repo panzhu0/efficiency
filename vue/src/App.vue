@@ -32,17 +32,17 @@ h1{
 }
 
 .container{
-    width: 1000px;
+    width: 1300px;
     margin: 0 auto;
 }
 
 .left{
     float: left;
-    width: 500px;
+    width: 600px;
 }
 
 .right{
-    width: 500px;
+    width: 700px;
     float: right;
 }
 
