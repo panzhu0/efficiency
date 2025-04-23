@@ -18,9 +18,9 @@
 
     <h5>Time Usage</h5>
     <input type="text" v-model="behavior" placeholder="Input Behavior" @keyup.enter="addBehavior"><br><br>
+    Start:&nbsp;<input type="time" v-model="start" @keyup.enter="addBehavior"><br>
+    End:&nbsp;&nbsp;&nbsp;<input type="time" v-model="end" @keyup.enter="addBehavior"><br><br>
     <input type="button" class="btn" value="Add" @click="addBehavior"><br><br>
-    Start:&nbsp;<input type="time" v-model="start"><br>
-    End:&nbsp;&nbsp;&nbsp;<input type="time" v-model="end"><br>
     <ul>
         <li v-for="(item,index) of behaviors" v-bind:key="behaviors">
             {{ item['start'] }} -> {{ item['end'] }} &nbsp; BEHABIOR : {{ item['behavior'] }} 
@@ -45,13 +45,21 @@ export default{
         const behavior = ref('')
         const start = ref('')
         const end = ref('')
+        const todos = useLS(TODOS,[])
+        const behaviors = useLS(BEHAVIORS,[])
+
+        start.value = '00:00'
+
         const addTodo =()=>{
+            if(!todo.value){
+                return
+            }
             todos.value.push(todo.value)
             todo.value=''
         }
 
         const addBehavior =()=>{ 
-            if(!start.value||!end.value){
+            if(!start.value || !end.value || !behavior.value){
                 return
             }
             const obj = {
@@ -66,6 +74,7 @@ export default{
         const clearTodo=()=>{
             todos.value=[]
         }
+
         const clearBehavior=()=>{
             behaviors.value = []
         }
@@ -78,15 +87,33 @@ export default{
             todos.value.splice(index,1)
         }
 
-        const todos = useLS(TODOS,[])
-        const behaviors = useLS(BEHAVIORS,[])
-
-        watch(behaviors.value,(n,o)=>{
-            // 更新start,end的值
-            for(let i =0;i<n.values.length;i++){
-
+        watch(behaviors.value,(val)=>{
+            if(val.length == 0){
+                start.value = '00:00'
             }
+
+            // START TIME
+            let max = 0
+            let max_ = ''
+            for(let i=0;i<val.length;i++){
+                const [s_h,s_m] = val[i]['start'].split(":").map(Number)
+                const [e_h,e_m] = val[i]['end'].split(":").map(Number)
+                const duration = e_h * 60 + e_m
+                if(duration > max){
+                    max = duration
+                    max_ = val[i]['end']
+                }
+            }
+            start.value = max_
+
+            // END TIME
+            const time = new Date()
+            const hours = time.getHours().toString().padStart(2, '0');          // 补零，如 "09"
+            const minutes = time.getMinutes().toString().padStart(2, '0');      // 补零，如 "05"
+            const shortTime = `${hours}:${minutes}`; 
+            end.value = shortTime
         })
+
         return {todo,behavior,behaviors,todos,addTodo,addBehavior,clearTodo,clearBehavior,rB,rT,start,end}
     }
 }
@@ -102,14 +129,14 @@ input{
 
 .del-btn-to {
   position: absolute;
-  right: 65%;
+  right: 70%;
   /* top: 50%; */
   /* transform: translateY(-10%); 垂直居中 */
 }
 
 .del-btn-behavior {
   position: absolute;
-  right: 56%;
+  right: 62%;
   /* top: 50%; */
   /* transform: translateY(-10%); 垂直居中 */
 }
