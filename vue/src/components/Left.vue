@@ -50,6 +50,18 @@ export default{
 
         start.value = '00:00'
 
+        const now = ()=>{
+            // END TIME
+            const time = new Date()
+            const hours = time.getHours().toString().padStart(2, '0');          // 补零，如 "09"
+            const minutes = time.getMinutes().toString().padStart(2, '0');      // 补零，如 "05"
+            const shortTime = `${hours}:${minutes}`; 
+            return shortTime
+        }
+        end.value = now()
+
+
+
         const addTodo =()=>{
             if(!todo.value){
                 return
@@ -77,6 +89,7 @@ export default{
 
         const clearBehavior=()=>{
             behaviors.value = []
+            window.location.reload();
         }
 
         const rB=(index)=>{
@@ -106,12 +119,7 @@ export default{
             }
             start.value = max_
 
-            // END TIME
-            const time = new Date()
-            const hours = time.getHours().toString().padStart(2, '0');          // 补零，如 "09"
-            const minutes = time.getMinutes().toString().padStart(2, '0');      // 补零，如 "05"
-            const shortTime = `${hours}:${minutes}`; 
-            end.value = shortTime
+            end.value = now()
         })
 
         return {todo,behavior,behaviors,todos,addTodo,addBehavior,clearTodo,clearBehavior,rB,rT,start,end}
