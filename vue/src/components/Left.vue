@@ -2,13 +2,27 @@
     <h5>Todo List</h5>
     <!-- 行为 -->
     <input type="text" v-model="todo" placeholder="Input Todo" @keyup.enter="addTodo">
-    <input type="button" value="Add" @click="addTodo"><br>
-    <ul>
-        <li 
-            v-for="(item,index) of todos" v-bind:key=todos>{{ item }}
-            <input type="button" @click="rT(index)" value="DEL" class="del-btn-to">
-        </li> 
-    </ul>
+    <input type="button" value="Add" @click="addTodo"><br><br>
+    <div v-for="(item,index) of todos" v-bind:key=todos>
+        <input 
+            type="checkbox" 
+            v-bind:id="index" 
+            @click="check(index)" 
+            v-model="item['check']"> 
+
+        <label 
+            v-bind:for="index" 
+            v-bind:class="{ done: item['check'] }">
+            {{ item['todo'] }}
+        </label>
+
+        <input 
+            type="button" 
+            @click="rT(index)" 
+            value="DEL" 
+            class="del-btn-to">
+
+    </div>
     <br>
 
     <input type="button"  v-show="todos.length>0" value="Clear" 
@@ -66,7 +80,10 @@ export default{
             if(!todo.value){
                 return
             }
-            todos.value.push(todo.value)
+            todos.value.push({
+                'todo':todo.value,
+                'check':false
+            })
             todo.value=''
         }
 
@@ -81,6 +98,10 @@ export default{
             }
             behaviors.value.push(obj)
             behavior.value=''
+        }
+
+        const check=()=>{
+
         }
 
         const clearTodo=()=>{
@@ -137,16 +158,21 @@ input{
 
 .del-btn-to {
   position: absolute;
-  right: 70%;
+  right: 65%;
   /* top: 50%; */
   /* transform: translateY(-10%); 垂直居中 */
 }
 
 .del-btn-behavior {
   position: absolute;
-  right: 62%;
+  right: 60%;
   /* top: 50%; */
   /* transform: translateY(-10%); 垂直居中 */
+}
+
+.done{
+    text-decoration: line-through;
+    color: #140404;
 }
 
 </style>
