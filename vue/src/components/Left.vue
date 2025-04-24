@@ -48,7 +48,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { useLS } from '@/composables/useLS';
 
 const TODOS = 'todos'
@@ -72,9 +72,10 @@ export default{
             const shortTime = `${hours}:${minutes}`; 
             return shortTime
         }
-        end.value = now()
 
-
+        onMounted(()=>{
+            end.value = now()
+        })
 
         const addTodo =()=>{
             if(!todo.value){
@@ -98,10 +99,6 @@ export default{
             }
             behaviors.value.push(obj)
             behavior.value=''
-        }
-
-        const check=()=>{
-
         }
 
         const clearTodo=()=>{
