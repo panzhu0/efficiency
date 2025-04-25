@@ -1,4 +1,8 @@
-import { createApp } from 'vue'
-import App from './App.vue'
+import { createApp } from 'vue';
+import Echarts from 'vue-echarts';
+import App from './App.vue';
+import 'echarts';
 
-createApp(App).mount('#app')
+createApp(App)
+    .component('ECharts',Echarts)
+    .mount('#app')
