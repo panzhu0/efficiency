@@ -2,42 +2,17 @@
     <h5>Charts</h5>
     <e-Charts class="pie" id="pie" :option="pieOption"></e-Charts>
     <e-Charts class="radar" id="radar" :option="radarOption"></e-Charts>
+    <h1>{{ countStore.count }}</h1>
 </template>
 
 <script setup>
-  import { useLS } from '@/composables/useLS';
-  import {onMounted, ref, watch,isRef} from 'vue'
-  import {behaviors} from '@/components/Left.vue'
+  import { ref,watch } from 'vue'
+  import { useCounterStore } from '../stores/count';   // 仅是引用不会执行
+  import { useBehaviorStore } from '../stores/behavior';
+  const countStore = useCounterStore()     // 使用模块
+  const behaviorStore = useBehaviorStore()     // 使用模块
 
-  const BEHAVIORS = 'behaviors'
-
-  alert(behaviors)
-
-  const pieData  = ()=>{
-    const m = new Map()
-
-    for(let i=0;i<behaviors.value.length;i++){
-      behaviors.value[i]['behavior']
-      const [s_h,s_m] = behaviors.value[i]['start'].split(':').map(Number)
-      const [e_h,e_m] = behaviors.value[i]['end'].split(':').map(Number)
-      const duration = e_h * 60 + e_m - s_h * 60 - s_m
-
-      m.set(
-          behaviors.value[i]['behavior'],                                         //Key
-          m.get(behaviors.value[i]['behavior']) + duration||0 + duration)         //Value
-    }
-
-    const data = []
-
-    m.forEach((v,k)=>{
-      data.push({
-          'value': v,
-          'name' : k,
-      })
-    })
-
-    return data;
-  }
+  const behaviors = behaviorStore.behaviors
 
   const pieOption = ref ({
     tooltip: {
@@ -71,7 +46,7 @@
         labelLine: {
           show: false
         },
-        data: pieData()
+        // data: pieData()
       }
     ]
   })

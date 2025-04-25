@@ -6,16 +6,9 @@
     </div>
 </template>
 
-<script>
+<script setup>
     import Left from './components/Left.vue';
     import Right from './components/Right.vue';
-
-    export default{
-        components:{
-            Left,Right
-        },
-        setup(){}
-    }
 </script>
 
 <style>
