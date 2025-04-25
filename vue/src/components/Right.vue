@@ -6,11 +6,12 @@
 
 <script setup>
   import { useLS } from '@/composables/useLS';
-  import {ref, watch} from 'vue'
+  import {onMounted, ref, watch,isRef} from 'vue'
+  import {behaviors} from '@/components/Left.vue'
 
   const BEHAVIORS = 'behaviors'
 
-  const behaviors = useLS(BEHAVIORS,[]) // behavior 是一个 ref 数组对象 ,但是behavior数组中元素数量增加减少后，没有alert
+  alert(behaviors)
 
   const pieData  = ()=>{
     const m = new Map()
@@ -73,10 +74,6 @@
         data: pieData()
       }
     ]
-  })
-
-  watch(behaviors,(n)=>{
-    alert(n)
   })
 
 </script>
