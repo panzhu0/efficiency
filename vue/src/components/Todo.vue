@@ -1,28 +1,30 @@
 <template>
+    <h4>todo</h4>
+    <hr>
     <div class="container">
-        <h4>todo</h4>
-        <hr>
         <div class="left">
             <h5>待办</h5>
             <input type="text" v-model="todo" placeholder="请输入TODO" @keydown.enter="addTodo"> <input type="button" value="增加" @click="addTodo"> <br>
-            <label v-for="item,index in todos" @mouseenter="item.showDel=true" @mouseleave="item.showDel=false">
+            <label v-for="item,index in todos" class="todo-item" @mouseenter="item.showDel=true" @mouseleave="item.showDel=fase">
                 <input type="checkbox" :checked="item.checked" @click="checkTodo(index)">
-                <span :class="{'checked':item.checked}">{{item.todo}}</span><input type="button" @click="delTodo" value="删除" v-show="item.showDel"><br>
+                <span :class="{'checked':item.checked}">{{item.todo}}</span>
+                <input type="button"  value="删除" @click="delTodo(index)" v-show="item.showDel"><br>
             </label>
             <br><input type="button" value="清空" @click="clearTodo" class="btn" v-show="todos.length > 0">
-            <h5>原则</h5>
+            <!-- <h5>原则</h5> -->
 
             <h5>行为</h5>
             <input type="text" placeholder="请输入你的行为" v-model="behavior" @keydown.enter="addBehavior"> <input type="button" value="增加"><br><br>
             开始时间: <input type="time" v-model="start" @keydown.enter="addBehavior"><br>
             结束时间: <input type="time" v-model="end" @keydown.enter="addBehavior"><br>
             <br><input type="button" value="增加" class="btn_time" @click="addBehavior">
-            <br><input type="button" value="清空" class="btn" v-show="behaviors.length > 0" @click="clearBehavior">
             <ul>
-                <li v-for="item,index in behaviors" @mouseenter="item.showDel=true" @mouseleave="item.showDel=false">
-                    {{ item.start }} -> {{ item.end }} : {{item.behavior }} <input type="button" value="删除" @click="delBehavior(index)" v-show="item.showDel">
+                <li v-for="item,index in behaviors" class="behavior-item">
+                    {{ item.start }} -> {{ item.end }} : {{item.behavior }} 
+                    <input type="button" value="删除" @click="delBehavior(index)" class="del-btn"> 
                 </li>
             </ul>
+            <br><input type="button" value="清空" class="btn" v-show="behaviors.length > 0" @click="clearBehavior">
         </div>
         <div class="right">
             <h4>图表</h4>
@@ -52,8 +54,8 @@ const BEHAVIORS= 'BEHAVIORS'
 const todos = useLS(TODOS,[])
 const behavior = ref('')
 const behaviors = useLS(BEHAVIORS,[])
-const start = ref('00:00')
-const end = ref('00:00')
+const start = ref('')
+const end = ref('')
 
 
 // 方法
@@ -73,13 +75,18 @@ const delTodo =(index)=>{
 }
 
 const addBehavior=()=>{
-    const obj = {
-        'behavior' : behavior.value,
-        'start' : start.value,
-        'end' : end.value
+    console.log(start.value)
+    console.log(end.value)
+    console.log(behavior.value)
+    if(behavior.value!='' && start.value!='' &&end.value!=''){
+        const obj = {
+            'behavior' : behavior.value,
+            'start' : start.value,
+            'end' : end.value
+        }
+        behavior.value = ''
+        behaviors.value.push(obj)
     }
-    behavior.value = ''
-    behaviors.value.push(obj)
 }
 
 const delBehavior=(index)=>{
@@ -140,4 +147,21 @@ input{
     text-decoration: line-through;
     color: rgb(34, 94, 39);
 }
+
+.behavior-item {
+    position: relative;
+    padding-right: 60px; /* 给删除按钮留出空间 */
+}
+
+.del-btn {
+    position: absolute;
+    right: 100px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.behavior-item:hover .del-btn {
+    opacity: 1;
+}
+
 </style>
