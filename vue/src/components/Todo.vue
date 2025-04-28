@@ -3,7 +3,7 @@
     <hr>
     <div class="container">
         <div class="left">
-            <h5>待办</h5>
+            <h3>待办</h3>
             <input type="text" v-model="todo" placeholder="请输入TODO" @keydown.enter="addTodo"> <input type="button" value="增加" @click="addTodo"> <br>
             <label v-for="item,index in todos" class="todo-item" @mouseenter="item.showDel=true" @mouseleave="item.showDel=fase">
                 <input type="checkbox" :checked="item.checked" @click="checkTodo(index)">
@@ -11,9 +11,9 @@
                 <input type="button"  value="删除" @click="delTodo(index)" v-show="item.showDel"><br>
             </label>
             <br><input type="button" value="清空" @click="clearTodo" class="btn" v-show="todos.length > 0">
-            <!-- <h5>原则</h5> -->
+            <!-- <h3>原则</h3> -->
 
-            <h5>行为</h5>
+            <h3>行为</h3>
             <input type="text" placeholder="请输入你的行为" v-model="behavior" @keydown.enter="addBehavior"> <input type="button" value="增加"><br><br>
             开始时间: <input type="time" v-model="start" @keydown.enter="addBehavior"><br>
             结束时间: <input type="time" v-model="end" @keydown.enter="addBehavior"><br>
@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import {ref,watch} from 'vue'
+import {computed, ref,watch} from 'vue'
 
 const useLS=(key,defaultVal)=>{
     const storedVal = localStorage.getItem(key)
@@ -55,7 +55,13 @@ const todos = useLS(TODOS,[])
 const behavior = ref('')
 const behaviors = useLS(BEHAVIORS,[])
 const start = ref('')
-const end = ref('')
+const end = computed(()=>{
+        // 实时时间
+        const now = new Date()
+        const h =  now.getHours()
+        const m =  now.getMinutes()
+        return `${h}:${m}`
+})
 
 
 // 方法
@@ -140,7 +146,7 @@ h4{
 }
 
 input{
-    font-size: 15px;
+    font-size: 18px;
 }
 
 .checked{
@@ -155,13 +161,16 @@ input{
 
 .del-btn {
     position: absolute;
-    right: 100px;
+    right: 110px;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
 }
 
 .behavior-item:hover .del-btn {
     opacity: 1;
 }
 
+.behavior-item:hover{
+    color: rgb(201, 0, 0);
+}
 </style>
