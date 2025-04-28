@@ -1,10 +1,5 @@
-import { createApp } from "vue";
-import ECharts from 'vue-echarts' // 引入Echarts
-import App from './App.vue';
-import { createPinia } from "pinia";
-import 'echarts';
+import { createApp } from 'vue'
+import App from './App.vue'
+import {createPinia} from 'pinia'
 
-createApp(App)
-    .component('ECharts',ECharts) // 全局引入Echarts
-    .use(createPinia())
-    .mount('#app');
+createApp(App).use(createPinia).mount('#app')
