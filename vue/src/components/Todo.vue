@@ -5,10 +5,10 @@
         <div class="left">
             <h3>待办</h3>
             <input type="text" v-model="todo" placeholder="请输入TODO" @keydown.enter="addTodo"> <input type="button" value="增加" @click="addTodo"> <br>
-            <label v-for="item,index in todos" class="todo-item" @mouseenter="item.showDel=true" @mouseleave="item.showDel=fase">
+            <label v-for="item,index in todos" class="todo-item" >
                 <input type="checkbox" :checked="item.checked" @click="checkTodo(index)">
                 <span :class="{'checked':item.checked}">{{item.todo}}</span>
-                <input type="button"  value="删除" @click="delTodo(index)" v-show="item.showDel"><br>
+                <input type="button"  value="删除" @click="delTodo(index)" class="todo-btn"><br>
             </label>
             <br><input type="button" value="清空" @click="clearTodo" class="btn" v-show="todos.length > 0">
             <!-- <h3>原则</h3> -->
@@ -28,12 +28,14 @@
         </div>
         <div class="right">
             <h4>图表</h4>
+            <div id="pie" class="pie">饼图</div>
+            <div id="radar" class="radar">雷达图</div>
         </div>
     </div>
 </template>
 
 <script setup>
-import {computed, ref,watch} from 'vue'
+import {onMounted, ref,watch} from 'vue'
 
 const useLS=(key,defaultVal)=>{
     const storedVal = localStorage.getItem(key)
@@ -55,16 +57,38 @@ const todos = useLS(TODOS,[])
 const behavior = ref('')
 const behaviors = useLS(BEHAVIORS,[])
 const start = ref('')
-const end = computed(()=>{
-        // 实时时间
-        const now = new Date()
-        const h =  now.getHours()
-        const m =  now.getMinutes()
-        return `${h}:${m}`
+const end = ref('')
+
+// 挂载时 
+onMounted(()=>{
+    // 开始时间
+    calStart()
+
+    // 结束时间
+    freshEnd()
 })
 
-
 // 方法
+const calStart=()=>{
+    // 开始时间
+    let max_ = ''
+    let max = 0;
+    for(let i=0;i<behaviors.value.length;i++){
+        // alert(typeof(behaviors.value[i]['end']))
+        const [e_h,e_m] = behaviors.value[i]['end'].split(":").map(Number)
+        if((e_h*60+e_m) > max){
+            max = e_h * 60  + e_m
+            max_ = behaviors.value[i]['end']
+        }
+    }
+    start.value = max_ || '00:00'
+}
+
+const freshEnd=()=>{
+    var now = new Date();
+    end.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`
+}
+
 const addTodo = ()=>{
     if (todo.value != '' || todo.value.length >0){
         const obj = {
@@ -93,10 +117,14 @@ const addBehavior=()=>{
         behavior.value = ''
         behaviors.value.push(obj)
     }
+    calStart();
+    freshEnd();
 }
 
 const delBehavior=(index)=>{
     behaviors.value.splice(index,1)
+    calStart()
+    freshEnd()
 }
 
 const checkTodo = (index)=>{
@@ -104,6 +132,7 @@ const checkTodo = (index)=>{
 }
 
 const clearTodo = ()=>{
+    start.value = '00:00';
     todos.value = []
     todo.value = ''
 }
@@ -111,6 +140,8 @@ const clearTodo = ()=>{
 const clearBehavior = ()=>{
     behaviors.value = []
     behavior.value = ''
+    calStart()
+    freshEnd()
 }
 </script>
 
@@ -172,5 +203,31 @@ input{
 
 .behavior-item:hover{
     color: rgb(201, 0, 0);
+}
+
+.todo-item{
+    position: relative;
+    padding-right: 60px; /* 给删除按钮留出空间 */
+}
+
+.todo-btn{
+    position: absolute;
+    left: 160px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.todo-item:hover .todo-btn {
+    opacity: 1;
+}
+
+.pie{
+    width: 400px;
+    height: 500px;
+}
+
+.radar{
+    width: 400px;
+    height: 500px;
 }
 </style>
