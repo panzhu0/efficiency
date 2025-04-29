@@ -14,7 +14,7 @@
             <!-- <h3>原则</h3> -->
 
             <h3>行为</h3>
-            <input type="text" placeholder="请输入你的行为" v-model="behavior" @keydown.enter="addBehavior"> <input type="button" value="增加"><br><br>
+            <input type="text" placeholder="请输入你的行为" v-model="behavior" @keydown.enter="addBehavior"> <input type="button" value="增加" @click="addBehavior"><br><br>
             开始时间: <input type="time" v-model="start" @keydown.enter="addBehavior"><br>
             结束时间: <input type="time" v-model="end" @keydown.enter="addBehavior"><br>
             <br><input type="button" value="增加" class="btn_time" @click="addBehavior">
@@ -35,8 +35,7 @@
 </template>
 
 <script setup>
-import {onMounted, ref,watch} from 'vue'
-import * as echarts from 'echarts'
+import {onMounted, ref,watch,computed} from 'vue'
 
 const useLS=(key,defaultVal)=>{
     const storedVal = localStorage.getItem(key)
@@ -60,86 +59,135 @@ const behaviors = useLS(BEHAVIORS,[])
 const start = ref('')
 const end = ref('')
 
-// 图像数据
-const pieOption = ref({
-  tooltip: {
-    trigger: 'item'
-  },
-  legend: {
-    top: '5%',
-    left: 'center'
-  },
-  series: [
-    {
-      name: 'Access From',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      avoidLabelOverlap: false,
-      padAngle: 5,
-      itemStyle: {
-        borderRadius: 10
-      },
-      label: {
-        show: false,
-        position: 'center'
-      },
-      emphasis: {
-        label: {
-          show: true,
-          fontSize: 40,
-          fontWeight: 'bold'
-        }
-      },
-      labelLine: {
-        show: false
-      },
-      data: [
-        { value: 1048, name: 'Search Engine' },
-        { value: 735, name: 'Direct' },
-        { value: 580, name: 'Email' },
-        { value: 484, name: 'Union Ads' },
-        { value: 300, name: 'Video Ads' }
-      ]
+// 饼图 + 雷达图
+const pieData=computed(()=>{
+    const m = new Map()
+
+    for(let i=0;i<behaviors.value.length;i++){
+        const b = behaviors.value[i]['behavior']
+
+        const start = behaviors.value[i]['start']
+        const end = behaviors.value[i]['end']
+        const [s_h,s_m] =  start.split(':').map(Number)
+        const [e_h,e_m] =  end.split(':').map(Number)
+        const duration = e_h * 60 + e_m - s_h * 60 - s_m
+
+        m.set(b,(m.get(b)||0)+duration);
     }
-  ]
+
+    const data = []
+    m.forEach((value,name)=>{
+        data.push({
+            'name':name,
+            'value':value/60
+        })
+    })
+    return data
 })
 
-const radarOption= ref({
-  title: {
-    text: 'Basic Radar Chart'
-  },
-  legend: {
-    data: ['Allocated Budget', 'Actual Spending']
-  },
-  radar: {
-    // shape: 'circle',
-    indicator: [
-      { name: 'Sales', max: 6500 },
-      { name: 'Administration', max: 16000 },
-      { name: 'Information Technology', max: 30000 },
-      { name: 'Customer Support', max: 38000 },
-      { name: 'Development', max: 52000 },
-      { name: 'Marketing', max: 25000 }
-    ]
-  },
-  series: [
-    {
-      name: 'Budget vs spending',
-      type: 'radar',
-      data: [
+const pieOption = computed(()=>{
+  return {
+    title:{
+        text:'今日时间分配',
+        // subtext: getTodayDate(),
+        left:'left'
+    },
+    tooltip: {
+    trigger: 'item',
+    formatter: function(params) {
+        const minutes = (params.value) * 60;
+        const hours = params.value;
+        const percent = params.percent;
+        return `
+            ${params.name}<br/>
+            分钟数: ${parseFloat(minutes).toFixed(2)} 分钟<br/>
+            小时数: ${parseFloat(hours).toFixed(2)} 小时<br/>
+            占比: ${percent}%
+        `;
+    },
+    },
+    legend: {
+        orient:'vertical',
+        top: '5%',
+        left: 'right'
+    },
+    series: [
         {
-          value: [4200, 3000, 20000, 35000, 50000, 18000],
-          name: 'Allocated Budget'
-        },
-        {
-          value: [5000, 14000, 28000, 26000, 42000, 21000],
-          name: 'Actual Spending'
+          name: '时间分布',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          label: {
+            show: true,
+            position: 'outside',  // 标签显示在扇形外侧
+            alignTo: '',  // 标签对齐边缘
+            formatter: function(param){
+              return `${param.name} : ${parseFloat(param.value).toFixed(2)} 小时`
+            },
+            margin: 0  // 标签与饼图的距离
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 35,
+              formatter: function(param){
+                return `${param.name} ${parseFloat(param.value).toFixed(1)}`
+              },
+              fontWeight: 'bold'
+            }
+          },
+          labelLine: {
+            show: true 
+          },
+          data: pieData.value,
         }
       ]
+}}
+)
+
+
+const radarOption= computed(()=>{
+    return {
+        title: {
+            text: '雷达图'
+        },
+        legend: {
+            data: ['时间分配']
+        },
+        radar: {
+            // shape: 'circle',
+            indicator: [
+            { name: 'Sales', max: 6500 },
+            { name: 'Administration', max: 16000 },
+            { name: 'Information Technology', max: 30000 },
+            { name: 'Customer Support', max: 38000 },
+            { name: 'Development', max: 52000 },
+            { name: 'Marketing', max: 25000 }
+            ]
+        },
+        series: [
+            {
+            name: 'Budget vs spending',
+            type: 'radar',
+            data: [
+                {
+                value: [4200, 3000, 20000, 35000, 50000, 18000],
+                name: 'Allocated Budget'
+                },
+                {
+                value: [5000, 14000, 28000, 26000, 42000, 21000],
+                name: 'Actual Spending'
+                }
+            ]
+            }
+        ]
     }
-  ]
 })
-console.log(radarOption.value)
 
 // 挂载时 
 onMounted(()=>{
@@ -150,8 +198,6 @@ onMounted(()=>{
 })
 
 // 方法
-
-
 const addTodo = ()=>{
     if (todo.value != '' || todo.value.length >0){
         const obj = {
@@ -205,6 +251,7 @@ const clearBehavior = ()=>{
     behavior.value = ''
     calStart()
     freshEnd()
+    pieOption
 }
 
 // 开始时间 + 结束时间
@@ -229,8 +276,7 @@ const freshEnd=()=>{
 }
 
 
-// 饼图 + 雷达图
-
+console.log(pieData.value)
 </script>
 
 <style scoped>
