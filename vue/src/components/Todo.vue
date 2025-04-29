@@ -28,14 +28,15 @@
         </div>
         <div class="right">
             <h4>图表</h4>
-            <div id="pie" class="pie">饼图</div>
-            <div id="radar" class="radar">雷达图</div>
+            <e-charts class="pie" id="pie" :option="pieOption"></e-charts>
+            <e-charts class="radar" id="radar" :option="radarOption"></e-charts>
         </div>
     </div>
 </template>
 
 <script setup>
 import {onMounted, ref,watch} from 'vue'
+import * as echarts from 'echarts'
 
 const useLS=(key,defaultVal)=>{
     const storedVal = localStorage.getItem(key)
@@ -59,35 +60,97 @@ const behaviors = useLS(BEHAVIORS,[])
 const start = ref('')
 const end = ref('')
 
+// 图像数据
+const pieOption = ref({
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    top: '5%',
+    left: 'center'
+  },
+  series: [
+    {
+      name: 'Access From',
+      type: 'pie',
+      radius: ['40%', '70%'],
+      avoidLabelOverlap: false,
+      padAngle: 5,
+      itemStyle: {
+        borderRadius: 10
+      },
+      label: {
+        show: false,
+        position: 'center'
+      },
+      emphasis: {
+        label: {
+          show: true,
+          fontSize: 40,
+          fontWeight: 'bold'
+        }
+      },
+      labelLine: {
+        show: false
+      },
+      data: [
+        { value: 1048, name: 'Search Engine' },
+        { value: 735, name: 'Direct' },
+        { value: 580, name: 'Email' },
+        { value: 484, name: 'Union Ads' },
+        { value: 300, name: 'Video Ads' }
+      ]
+    }
+  ]
+})
+
+const radarOption= ref({
+  title: {
+    text: 'Basic Radar Chart'
+  },
+  legend: {
+    data: ['Allocated Budget', 'Actual Spending']
+  },
+  radar: {
+    // shape: 'circle',
+    indicator: [
+      { name: 'Sales', max: 6500 },
+      { name: 'Administration', max: 16000 },
+      { name: 'Information Technology', max: 30000 },
+      { name: 'Customer Support', max: 38000 },
+      { name: 'Development', max: 52000 },
+      { name: 'Marketing', max: 25000 }
+    ]
+  },
+  series: [
+    {
+      name: 'Budget vs spending',
+      type: 'radar',
+      data: [
+        {
+          value: [4200, 3000, 20000, 35000, 50000, 18000],
+          name: 'Allocated Budget'
+        },
+        {
+          value: [5000, 14000, 28000, 26000, 42000, 21000],
+          name: 'Actual Spending'
+        }
+      ]
+    }
+  ]
+})
+console.log(radarOption.value)
+
 // 挂载时 
 onMounted(()=>{
     // 开始时间
     calStart()
-
     // 结束时间
     freshEnd()
 })
 
 // 方法
-const calStart=()=>{
-    // 开始时间
-    let max_ = ''
-    let max = 0;
-    for(let i=0;i<behaviors.value.length;i++){
-        // alert(typeof(behaviors.value[i]['end']))
-        const [e_h,e_m] = behaviors.value[i]['end'].split(":").map(Number)
-        if((e_h*60+e_m) > max){
-            max = e_h * 60  + e_m
-            max_ = behaviors.value[i]['end']
-        }
-    }
-    start.value = max_ || '00:00'
-}
 
-const freshEnd=()=>{
-    var now = new Date();
-    end.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`
-}
 
 const addTodo = ()=>{
     if (todo.value != '' || todo.value.length >0){
@@ -143,6 +206,31 @@ const clearBehavior = ()=>{
     calStart()
     freshEnd()
 }
+
+// 开始时间 + 结束时间
+const calStart=()=>{
+    // 开始时间
+    let max_ = ''
+    let max = 0;
+    for(let i=0;i<behaviors.value.length;i++){
+        // alert(typeof(behaviors.value[i]['end']))
+        const [e_h,e_m] = behaviors.value[i]['end'].split(":").map(Number)
+        if((e_h*60+e_m) > max){
+            max = e_h * 60  + e_m
+            max_ = behaviors.value[i]['end']
+        }
+    }
+    start.value = max_ || '00:00'
+}
+
+const freshEnd=()=>{
+    var now = new Date();
+    end.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`
+}
+
+
+// 饼图 + 雷达图
+
 </script>
 
 <style scoped>
@@ -222,12 +310,12 @@ input{
 }
 
 .pie{
-    width: 400px;
+    width: 700px;
     height: 500px;
 }
 
 .radar{
-    width: 400px;
+    width: 700px;
     height: 500px;
 }
 </style>
