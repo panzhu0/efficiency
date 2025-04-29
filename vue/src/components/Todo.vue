@@ -1,5 +1,5 @@
 <template>
-    <h4>todo</h4>
+    <h2>TODO</h2>
     <hr>
     <div class="container">
         <div class="left">
@@ -27,9 +27,8 @@
             <br><input type="button" value="清空" class="btn" v-show="behaviors.length > 0" @click="clearBehavior">
         </div>
         <div class="right">
-            <h4>图表</h4>
+            <h3>图表</h3>
             <e-charts class="pie" id="pie" :option="pieOption"></e-charts>
-            <e-charts class="radar" id="radar" :option="radarOption"></e-charts>
         </div>
     </div>
 </template>
@@ -79,7 +78,8 @@ const pieData=computed(()=>{
     m.forEach((value,name)=>{
         data.push({
             'name':name,
-            'value':value/60
+            'value':value/60,
+            'max':8
         })
     })
     return data
@@ -144,50 +144,11 @@ const pieOption = computed(()=>{
           labelLine: {
             show: true 
           },
-          data: pieData.value,
+          data: pieData.value || [],
         }
       ]
 }}
 )
-
-
-const radarOption= computed(()=>{
-    return {
-        title: {
-            text: '雷达图'
-        },
-        legend: {
-            data: ['时间分配']
-        },
-        radar: {
-            // shape: 'circle',
-            indicator: [
-            { name: 'Sales', max: 6500 },
-            { name: 'Administration', max: 16000 },
-            { name: 'Information Technology', max: 30000 },
-            { name: 'Customer Support', max: 38000 },
-            { name: 'Development', max: 52000 },
-            { name: 'Marketing', max: 25000 }
-            ]
-        },
-        series: [
-            {
-            name: 'Budget vs spending',
-            type: 'radar',
-            data: [
-                {
-                value: [4200, 3000, 20000, 35000, 50000, 18000],
-                name: 'Allocated Budget'
-                },
-                {
-                value: [5000, 14000, 28000, 26000, 42000, 21000],
-                name: 'Actual Spending'
-                }
-            ]
-            }
-        ]
-    }
-})
 
 // 挂载时 
 onMounted(()=>{
@@ -274,9 +235,6 @@ const freshEnd=()=>{
     var now = new Date();
     end.value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`
 }
-
-
-console.log(pieData.value)
 </script>
 
 <style scoped>
@@ -286,7 +244,7 @@ console.log(pieData.value)
     width: 1200px;
 }
 
-h4{
+h2{
     text-align: center;
 }
 
@@ -358,10 +316,8 @@ input{
 .pie{
     width: 700px;
     height: 500px;
-}
-
-.radar{
-    width: 700px;
-    height: 500px;
+    background: #ffffff;
+    box-shadow: 1px 1px 20px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(100px);
 }
 </style>
