@@ -152,13 +152,19 @@ const pieOption = computed(()=>{
 
 const radarData = computed(()=>{
     let max = 0;
+
+    if(pieData.value.length==0){
+        return []
+    }
+
+    const data = []
+
     for(let i=0;i<pieData.value.length;i++){
         if(pieData.value[i]['value'] > max){
             max = pieData.value[i]['value'];
         }
     }
 
-    const data = []
     for(let i=0;i<pieData.value.length;i++){
         data.push({
             'name':pieData.value[i]['name'],
@@ -180,45 +186,49 @@ const radarOption = computed(()=>{
   },
   radar: {
     // shape: 'circle',
-    indicator: [
-      { name: 'Sales', max: 6500 },
-      { name: 'Administration', max: 16000 },
-      { name: 'Information Technology', max: 30000 },
-      { name: 'Customer Support', max: 38000 },
-      { name: 'Development', max: 52000 },
-      { name: 'Marketing', max: 25000 }
-    ]
-    // indicator: radarData.value.map(item=>{
-    //     return {
-    //         name:item.name,
-    //         max:item.max
-    //     }
-    // })
+    // indicator: [
+    //   { name: 'Sales', max: 6500 },
+    //   { name: 'Administration', max: 16000 },
+    //   { name: 'Information Technology', max: 30000 },
+    //   { name: 'Customer Support', max: 38000 },
+    //   { name: 'Development', max: 52000 },
+    //   { name: 'Marketing', max: 25000 }
+    // ]
+    indicator: radarData.value.map(item=>{
+        return {
+            name:item.name,
+            max:item.max
+        }
+    })
   },
   series: [
     {
       name: '时间分配',
       type: 'radar',
-      data: [
-        {
-          value: [4200, 3000, 20000, 35000, 50000, 18000],
-          name: '极限'
-        },
-        {
-          value: [5000, 14000, 28000, 26000, 42000, 21000],
-          name: '实际分配'
-        }
-      ]
     //   data: [
     //     {
-    //         value: radarData.value.map(v=>v.max),
-    //         name:'极限'
+    //       value: [4200, 3000, 20000, 35000, 50000, 18000],
+    //       name: '极限'
     //     },
     //     {
-    //         value: radarData.value.map(v=>v.value),
-    //         name:'实际分配'
+    //       value: [5000, 14000, 28000, 26000, 42000, 21000],
+    //       name: '实际分配'
     //     }
     //   ]
+      data: [
+        {
+            value: radarData.value.map(v=>{
+                return v.max
+            }),
+            name:'极限'
+        },
+        {
+            value: radarData.value.map(v=>{
+                return v.value
+            }),
+            name:'实际分配'
+        }
+      ]
     }
   ]
 }});
