@@ -207,16 +207,6 @@ const radarOption = computed(()=>{
     {
       name: '时间分配',
       type: 'radar',
-    //   data: [
-    //     {
-    //       value: [4200, 3000, 20000, 35000, 50000, 18000],
-    //       name: '极限'
-    //     },
-    //     {
-    //       value: [5000, 14000, 28000, 26000, 42000, 21000],
-    //       name: '实际分配'
-    //     }
-    //   ]
       data: [
         {
             value: radarData.value.map(v=>{
