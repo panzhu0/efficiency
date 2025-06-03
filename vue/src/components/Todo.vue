@@ -187,15 +187,6 @@ const radarOption = computed(()=>{
     data: ['极限', '实际分配']
   },
   radar: {
-    // shape: 'circle',
-    // indicator: [
-    //   { name: 'Sales', max: 6500 },
-    //   { name: 'Administration', max: 16000 },
-    //   { name: 'Information Technology', max: 30000 },
-    //   { name: 'Customer Support', max: 38000 },
-    //   { name: 'Development', max: 52000 },
-    //   { name: 'Marketing', max: 25000 }
-    // ]
     indicator: radarData.value.map(item=>{
         return {
             name:item.name,
