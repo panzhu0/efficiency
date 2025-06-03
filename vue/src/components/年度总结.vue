@@ -1,5 +1,5 @@
 <template>
-    <h3>年度总结,需要开放展示</h3>
+    <h3>年度总结</h3>
     <ul>
     </ul>
 </template>
