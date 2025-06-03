@@ -29,6 +29,8 @@
         <div class="right">
             <h3>图表</h3>
             <e-charts class="pie" id="pie" :option="pieOption"></e-charts>
+            <br>
+            <br>
             <e-charts class="radar" id="radar" :option="radarOption"></e-charts>
         </div>
     </div>
