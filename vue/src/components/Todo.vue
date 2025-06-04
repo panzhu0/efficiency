@@ -17,6 +17,7 @@
             <input type="text" placeholder="请输入你的行为" v-model="behavior" @keydown.enter="addBehavior"> <input type="button" value="增加" @click="addBehavior"><br><br>
             开始时间: <input type="time" v-model="start" @keydown.enter="addBehavior"><br>
             结束时间: <input type="time" v-model="end" @keydown.enter="addBehavior"><br>
+            <div id="remainTime">剩余时间: {{ time }}</div>
             <br><input type="button" value="增加" class="btn_time" @click="addBehavior">
             <ul>
                 <li v-for="item,index in behaviors" class="behavior-item">
@@ -37,7 +38,26 @@
 </template>
 
 <script setup>
-import {onMounted, ref,watch,computed} from 'vue'
+import {onMounted, ref,watch,computed, onBeforeUnmount} from 'vue'
+
+const time = ref('')
+
+const updateTime = ()=>{
+    const now = new Date()
+    const hours = String(23-now.getHours()).padStart(2, '0')
+    const minutes = String(59-now.getMinutes()).padStart(2, '0')
+    const seconds = String(59-now.getSeconds()).padStart(2, '0')
+    time.value = `${hours}:${minutes}:${seconds}`
+}
+
+updateTime()
+
+// 设置定时器
+const timer = setInterval(updateTime,100)
+
+onMounted(()=>{
+    onBeforeUnmount(()=>{clearInterval(timer)})
+})
 
 const useLS=(key,defaultVal)=>{
     const storedVal = localStorage.getItem(key)
