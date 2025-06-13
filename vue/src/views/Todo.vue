@@ -26,6 +26,9 @@
                 </li>
             </ul>
             <br><input type="button" value="清空" class="btn" v-show="behaviors.length > 0" @click="clearBehavior">
+            <br>
+            <br>
+            <a href="#" @click="exit()">退出</a>
         </div>
         <div class="right">
             <h3>图表</h3>
@@ -39,8 +42,26 @@
 
 <script setup>
 import {onMounted, ref,watch,computed, onBeforeUnmount} from 'vue'
+import { useRouter } from 'vue-router'
 
 const time = ref('')
+const router  = useRouter()
+
+onBeforeUnmount(()=>{
+    const pieChart = echarts.getInstanceByDom(document.getElementById('pie'));
+    const radarChart = echarts.getInstanceByDom(document.getElementById('radar'));
+    pieChart?.dispose();
+    radarChart?.dispose();
+})
+
+const exit = async()=>{
+    localStorage.removeItem("todo_token")
+    await router.replace('/login');
+
+    if (router.currentRoute.value.path === '/login') {
+        window.location.reload(); // 完全重置应用状态
+    }
+}
 
 const updateTime = ()=>{
     const now = new Date()
@@ -80,6 +101,7 @@ const behavior = ref('')
 const behaviors = useLS(BEHAVIORS,[])
 const start = ref('')
 const end = ref('')
+
 
 // 饼图 + 雷达图
 const pieData=computed(()=>{
@@ -247,11 +269,13 @@ onMounted(()=>{
 // 方法
 const addTodo = ()=>{
     if (todo.value != '' || todo.value.length >0){
+        const newTodos = [...todos.value]; // 创建新数组
         const obj = {
             todo :todo.value,
             checked : false,
         }
-        todos.value.push(obj)
+        newTodos.push(obj)
+        todos.value = newTodos
         todo.value = ''
     }
 }
