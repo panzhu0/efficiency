@@ -1,7 +1,10 @@
 export default function(api){
     return {
-        login(data){
-            return api.post('/login',data);
+        async login(data){
+            return await api.post('/login',data);
+        },
+        valid(token){
+            return api.post('/validToken',token)
         }
     }
 }

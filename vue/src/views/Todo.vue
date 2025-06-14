@@ -1,11 +1,12 @@
 <template>
-    <h2>TODO</h2>
+    <br>
+    <h1>TODO</h1>
     <hr>
 
     <div class="container">
         <div class="left"> <h3>待办</h3>
             <input type="text" v-model="todo" placeholder="请输入TODO" @keydown.enter="addTodo"> 
-            <input type="button" value="增加" @click="addTodo"> 
+            <input type="button" value="增加" @click="addTodo">
             <br>
 
             <!-- 展示区:TODO -->
@@ -39,6 +40,7 @@
 
 
             结束时间: <input type="time" v-model="end" @keydown.enter="addBehavior">
+            <br>
             <br>
 
 
@@ -78,7 +80,6 @@
 
 <script setup>
 import { onMounted,ref,computed,onBeforeUnmount} from 'vue'
-import {storeToRefs} from 'pinia'
 import { useRouter } from 'vue-router'
 import useTodoStore from '@/stores/todo'
 import useBehaviorStore from '@/stores/behavior'
@@ -361,6 +362,11 @@ onMounted(()=>{
 
 
 const addBehavior=()=>{
+    if(behavior.value.length > 10){
+        alert("字数过多,最大字符数量:10")
+        return;
+    }
+
     if(behavior.value!='' && start.value!='' &&end.value!=''){
         const obj = {
             'behavior' : behavior.value,
@@ -417,7 +423,7 @@ const freshEnd=()=>{
     width: 1200px;
 }
 
-h2{
+h1{
     text-align: center;
 }
 

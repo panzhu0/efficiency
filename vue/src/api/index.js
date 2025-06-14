@@ -3,7 +3,7 @@ import user from "@/api/user"
 
 const api = axios.create({
     baseURL: 'http://localhost:8080',
-    timeout: 1000
+    timeout: 1500
 })
 
 // 请求拦截器

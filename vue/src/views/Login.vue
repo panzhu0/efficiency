@@ -49,7 +49,7 @@ const login = function(){
                 }
             })
         }
-    }).catch(err => alert(err));
+    }).catch(err => alert("请求失败: "+err));
 }
 </script>
 
