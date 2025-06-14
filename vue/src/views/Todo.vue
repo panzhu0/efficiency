@@ -16,12 +16,12 @@
                 <input 
                 type="checkbox" 
                 :id="idx"
-                v-model="item.checked"
+                @click="checkTodo(item.id)"
                 >
                 <!-- 内容 -->
                 {{ item.todo }}
                 <!-- 删除按钮 -->
-                <button @click="removeTodo(idx)">删除</button>
+                <button @click="removeTodo(item.id)">删除</button>
                 </label>
             </div>
             <!-- 清空 -->
@@ -86,6 +86,14 @@ import useBehaviorStore from '@/stores/behavior'
 
 const todoStore = useTodoStore()
 
+onMounted(async ()=>{
+    await todoStore.fetchTodos()
+    console.log(todoStore.todoList)
+})
+
+const checkTodo= (id)=>{
+    todoStore.check(id)
+}
 todoStore.$subscribe((m,s)=>{
     // 数据改变后，将数据保存到LS
     console.log(todoStore.todoList)
@@ -98,6 +106,7 @@ const addTodo =()=>{
         // alert("TODO 不能为空")
         return
     }
+
     if(todo.value.length > 10){
         alert("TODO 字数过长")
         return
@@ -110,8 +119,8 @@ const addTodo =()=>{
     todo.value = ''
 }
 
-const removeTodo =(idx)=>{
-    todoStore.remove(idx);
+const removeTodo =(id)=>{
+    todoStore.remove(id);
 }
 
 const clearTodo=()=>{
@@ -165,9 +174,7 @@ onMounted(()=>{
 
 // 变量声明
 const todo = ref('')
-const BEHAVIORS= 'BEHAVIORS'
 const behavior = ref('')
-const behaviors = ref([])
 const start = ref('')
 const end = ref('')
 

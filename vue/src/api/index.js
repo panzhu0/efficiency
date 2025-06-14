@@ -1,5 +1,6 @@
 import axios from "axios";
 import user from "@/api/user"
+import todo from '@/api/todo'
 
 const api = axios.create({
     baseURL: 'http://localhost:8080',
@@ -30,4 +31,5 @@ api.interceptors.response.use(resp =>{
 // 导出
 export default{
     user: user(api),
+    todo: todo(api),
 }
