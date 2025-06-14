@@ -1,48 +1,120 @@
 <template>
     <h2>TODO</h2>
     <hr>
+
     <div class="container">
-        <div class="left">
-            <h3>待办</h3>
-            <input type="text" v-model="todo" placeholder="请输入TODO" @keydown.enter="addTodo"> <input type="button" value="增加" @click="addTodo"> <br>
-            <label v-for="item,index in todos" class="todo-item" >
-                <input type="checkbox" :checked="item.checked" @click="checkTodo(index)">
-                <span :class="{'checked':item.checked}">{{item.todo}}</span>
-                <input type="button"  value="删除" @click="delTodo(index)" class="todo-btn"><br>
-            </label>
-            <br><input type="button" value="清空" @click="clearTodo" class="btn" v-show="todos.length > 0">
-            <!-- <h3>原则</h3> -->
+        <div class="left"> <h3>待办</h3>
+            <input type="text" v-model="todo" placeholder="请输入TODO" @keydown.enter="addTodo"> 
+            <input type="button" value="增加" @click="addTodo"> 
+            <br>
+
+            <!-- 展示区:TODj -->
+            <div v-for="item,idx in todoStore.todoList">
+                <label :class="{'checked':item.checked}">
+                <!-- CHECKBOk -->
+                <input 
+                type="checkbox" 
+                :id="idx"
+                v-model="item.checked"
+                >
+                <!-- 内容 -->
+                {{ item.todo }}
+                <!-- 删除按钮 -->
+                <button @click="removeTodo(idx)">删除</button>
+                </label>
+            </div>
+            <!-- 清空 -->
+            <button v-show="todoStore.todoList.length > 0" @click="clearTodo">清空</button>
+            <br>
 
             <h3>行为</h3>
-            <input type="text" placeholder="请输入你的行为" v-model="behavior" @keydown.enter="addBehavior"> <input type="button" value="增加" @click="addBehavior"><br><br>
-            开始时间: <input type="time" v-model="start" @keydown.enter="addBehavior"><br>
-            结束时间: <input type="time" v-model="end" @keydown.enter="addBehavior"><br>
+            <input type="text" placeholder="请输入你的行为" v-model="behavior" @keydown.enter="addBehavior"> 
+            <input type="button" value="增加" @click="addBehavior">
+            <br>
+            <br>
+            
+
+            开始时间: <input type="time" v-model="start" @keydown.enter="addBehavior">
+            <br>
+
+
+            结束时间: <input type="time" v-model="end" @keydown.enter="addBehavior">
+            <br>
+
+
             <div id="remainTime">剩余时间: {{ time }}</div>
-            <br><input type="button" value="增加" class="btn_time" @click="addBehavior">
+            <br>
+
+
+            <input type="button" value="增加" class="btn_time" @click="addBehavior">
+
             <ul>
                 <li v-for="item,index in behaviors" class="behavior-item">
                     {{ item.start }} -> {{ item.end }} : {{item.behavior }} 
                     <input type="button" value="删除" @click="delBehavior(index)" class="del-btn"> 
                 </li>
             </ul>
-            <br><input type="button" value="清空" class="btn" v-show="behaviors.length > 0" @click="clearBehavior">
+            <br>
+
+
+            <input type="button" value="清空" class="btn" v-show="behaviors.length > 0" @click="clearBehavior">
             <br>
             <br>
+
+
             <a href="#" @click="exit()">退出</a>
         </div>
+
+
         <div class="right">
             <h3>图表</h3>
             <e-charts class="pie" id="pie" :option="pieOption"></e-charts>
             <br>
             <br>
-            <e-charts class="radar" id="radar" :option="radarOption"></e-charts>
+            <!-- <e-charts class="radar" id="radar" :option="radarOption"></e-charts> -->
         </div>
     </div>
 </template>
 
 <script setup>
-import {onMounted, ref,watch,computed, onBeforeUnmount} from 'vue'
+import { onMounted,ref,computed,onBeforeUnmount} from 'vue'
+import {storeToRefs} from 'pinia'
 import { useRouter } from 'vue-router'
+import useTodoStore from '@/stores/todo'
+
+const todoStore = useTodoStore()
+
+todoStore.$subscribe((m,s)=>{
+    // 数据改变后，将数据保存到LS
+    console.log(todoStore.todoList)
+    localStorage.setItem("TODOS",JSON.stringify(todoStore.todoList))
+})
+
+const addTodo =()=>{
+    console.log('@@@',todoStore.todoList)
+    if(!todo.value || todo.value.length == 0){
+        // alert("TODO 不能为空")
+        return
+    }
+    if(todo.value.length > 10){
+        alert("TODO 字数过长")
+        return
+    }
+
+    todoStore.add({
+        todo: todo.value,
+        checked: false
+    })
+    todo.value = ''
+}
+
+const removeTodo =(idx)=>{
+    todoStore.remove(idx);
+}
+
+const clearTodo=()=>{
+    todoStore.clear()
+}
 
 const time = ref('')
 const router  = useRouter()
@@ -80,25 +152,11 @@ onMounted(()=>{
     onBeforeUnmount(()=>{clearInterval(timer)})
 })
 
-const useLS=(key,defaultVal)=>{
-    const storedVal = localStorage.getItem(key)
-    const data = ref(storedVal?JSON.parse(storedVal):defaultVal)
-
-    // 监听变化
-    watch(data,(newVal)=>{
-        localStorage.setItem(key,JSON.stringify(newVal));
-    },{deep:true})
-
-    return data;
-}
-
 // 变量声明
 const todo = ref('')
-const TODOS = 'TODOS'
 const BEHAVIORS= 'BEHAVIORS'
-const todos = useLS(TODOS,[])
 const behavior = ref('')
-const behaviors = useLS(BEHAVIORS,[])
+const behaviors = ref([])
 const start = ref('')
 const end = ref('')
 
@@ -219,7 +277,6 @@ const radarData = computed(()=>{
     return data
 })
 
-
 const radarOption = computed(()=>{
     return {
   title: {
@@ -266,23 +323,6 @@ onMounted(()=>{
     freshEnd()
 })
 
-// 方法
-const addTodo = ()=>{
-    if (todo.value != '' || todo.value.length >0){
-        const newTodos = [...todos.value]; // 创建新数组
-        const obj = {
-            todo :todo.value,
-            checked : false,
-        }
-        newTodos.push(obj)
-        todos.value = newTodos
-        todo.value = ''
-    }
-}
-
-const delTodo =(index)=>{
-    todos.value.splice(index,1)
-}
 
 const addBehavior=()=>{
     if(behavior.value!='' && start.value!='' &&end.value!=''){
@@ -302,16 +342,6 @@ const delBehavior=(index)=>{
     behaviors.value.splice(index,1)
     calStart()
     freshEnd()
-}
-
-const checkTodo = (index)=>{
-    todos.value[index].checked = !(todos.value[index].checked)
-}
-
-const clearTodo = ()=>{
-    start.value = '00:00';
-    todos.value = []
-    todo.value = ''
 }
 
 const clearBehavior = ()=>{
