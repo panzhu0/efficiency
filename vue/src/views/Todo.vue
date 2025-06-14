@@ -71,7 +71,7 @@
             <e-charts class="pie" id="pie" :option="pieOption"></e-charts>
             <br>
             <br>
-            <!-- <e-charts class="radar" id="radar" :option="radarOption"></e-charts> -->
+            <e-charts class="radar" id="radar" :option="radarOption"></e-charts>
         </div>
     </div>
 </template>
@@ -288,42 +288,68 @@ const radarData = computed(()=>{
 })
 
 const radarOption = computed(()=>{
-    return {
-  title: {
-    text: '时间分配雷达图'
-  },
-  legend: {
-    data: ['极限', '实际分配']
-  },
-  radar: {
-    indicator: radarData.value.map(item=>{
+    // 无数据,友好展示
+    if(behaviorStore.behaviorList.length ==0 || !behaviorStore.behaviorList){
         return {
-            name:item.name,
-            max:item.max
+            title: {
+                text: '暂无数据',
+                left: 'center',
+                top: 'center',
+                textStyle: {
+                color: '#999',
+                fontSize: 16
+                }
+            },
+            graphic: [{
+                type: 'text',
+                left: 'center',
+                top: '45%',
+                style: {
+                text: '当前没有可显示的数据',
+                fill: '#ccc',
+                fontSize: 14
+                }
+            }],
         }
-    })
-  },
-  series: [
-    {
-      name: '时间分配',
-      type: 'radar',
-      data: [
-        {
-            value: radarData.value.map(v=>{
-                return v.max
-            }),
-            name:'极限'
-        },
-        {
-            value: radarData.value.map(v=>{
-                return v.value
-            }),
-            name:'实际分配'
-        }
-      ]
     }
-  ]
-}});
+
+    return {
+        title: {
+            text: '时间分配雷达图'
+        },
+        legend: {
+            data: ['极限', '实际分配']
+        },
+        radar: {
+            indicator: radarData.value.map(item=>{
+                return {
+                    name:item.name,
+                    max:item.max
+                }
+            })
+        },
+        series: [
+            {
+            name: '时间分配',
+            type: 'radar',
+            data: [
+                {
+                    value: radarData.value.map(v=>{
+                        return v.max
+                    }),
+                    name:'极限'
+                },
+                {
+                    value: radarData.value.map(v=>{
+                        return v.value
+                    }),
+                    name:'实际分配'
+                }
+            ]
+            }
+        ]
+    }
+    });
 
 // 挂载时 
 onMounted(()=>{
