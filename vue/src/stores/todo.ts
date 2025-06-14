@@ -27,8 +27,6 @@ const useTodoStore = defineStore('todo',{
             this.todoList = []
         }
     }
-
-    // 监听器
 })
 
 export default useTodoStore;

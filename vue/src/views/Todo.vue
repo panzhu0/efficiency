@@ -8,7 +8,7 @@
             <input type="button" value="增加" @click="addTodo"> 
             <br>
 
-            <!-- 展示区:TODj -->
+            <!-- 展示区:TODO -->
             <div v-for="item,idx in todoStore.todoList">
                 <label :class="{'checked':item.checked}">
                 <!-- CHECKBOk -->
@@ -48,8 +48,9 @@
 
             <input type="button" value="增加" class="btn_time" @click="addBehavior">
 
+            <!-- 展示区BEHAVIOR-->
             <ul>
-                <li v-for="item,index in behaviors" class="behavior-item">
+                <li v-for="item,index in behaviorStore.behaviorList" class="behavior-item">
                     {{ item.start }} -> {{ item.end }} : {{item.behavior }} 
                     <input type="button" value="删除" @click="delBehavior(index)" class="del-btn"> 
                 </li>
@@ -57,10 +58,9 @@
             <br>
 
 
-            <input type="button" value="清空" class="btn" v-show="behaviors.length > 0" @click="clearBehavior">
+            <input type="button" value="清空" class="btn" v-show="behaviorStore.behaviorList.length > 0" @click="clearBehavior">
             <br>
             <br>
-
 
             <a href="#" @click="exit()">退出</a>
         </div>
@@ -81,6 +81,7 @@ import { onMounted,ref,computed,onBeforeUnmount} from 'vue'
 import {storeToRefs} from 'pinia'
 import { useRouter } from 'vue-router'
 import useTodoStore from '@/stores/todo'
+import useBehaviorStore from '@/stores/behavior'
 
 const todoStore = useTodoStore()
 
@@ -115,6 +116,15 @@ const removeTodo =(idx)=>{
 const clearTodo=()=>{
     todoStore.clear()
 }
+
+// BEHAVIOR
+const behaviorStore = useBehaviorStore()
+
+behaviorStore.$subscribe(()=>{
+    // 数据改变后，将数据保存到LS
+    console.log(behaviorStore.behaviorList)
+    localStorage.setItem("BEHAVIORS",JSON.stringify(behaviorStore.behaviorList))
+})
 
 const time = ref('')
 const router  = useRouter()
@@ -165,11 +175,11 @@ const end = ref('')
 const pieData=computed(()=>{
     const m = new Map()
 
-    for(let i=0;i<behaviors.value.length;i++){
-        const b = behaviors.value[i]['behavior']
+    for(let i=0;i<behaviorStore.behaviorList.length;i++){
+        const b = behaviorStore.behaviorList[i]['behavior']
 
-        const start = behaviors.value[i]['start']
-        const end = behaviors.value[i]['end']
+        const start = behaviorStore.behaviorList[i]['start']
+        const end = behaviorStore.behaviorList[i]['end']
         const [s_h,s_m] =  start.split(':').map(Number)
         const [e_h,e_m] =  end.split(':').map(Number)
         const duration = e_h * 60 + e_m - s_h * 60 - s_m
@@ -332,21 +342,21 @@ const addBehavior=()=>{
             'end' : end.value
         }
         behavior.value = ''
-        behaviors.value.push(obj)
+        behaviorStore.add(obj)
     }
     calStart();
     freshEnd();
 }
 
 const delBehavior=(index)=>{
-    behaviors.value.splice(index,1)
+    behaviorStore.remove(index)
     calStart()
     freshEnd()
 }
 
 const clearBehavior = ()=>{
-    behaviors.value = []
     behavior.value = ''
+    behaviorStore.clear()
     calStart()
     freshEnd()
     pieOption
@@ -357,12 +367,12 @@ const calStart=()=>{
     // 开始时间
     let max_ = ''
     let max = 0;
-    for(let i=0;i<behaviors.value.length;i++){
+    for(let i=0;i<behaviorStore.behaviorList.length;i++){
         // alert(typeof(behaviors.value[i]['end']))
-        const [e_h,e_m] = behaviors.value[i]['end'].split(":").map(Number)
+        const [e_h,e_m] = behaviorStore.behaviorList[i]['end'].split(":").map(Number)
         if((e_h*60+e_m) > max){
             max = e_h * 60  + e_m
-            max_ = behaviors.value[i]['end']
+            max_ = behaviorStore.behaviorList[i]['end']
         }
     }
     start.value = max_ || '00:00'
